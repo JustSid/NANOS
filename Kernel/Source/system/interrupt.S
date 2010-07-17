@@ -67,9 +67,17 @@ ir_preHandler:
     push %ebx
     push %eax
 
+	mov $0x10, %ax
+    mov %ax, %ds
+    mov %ax, %es
+
     push %esp
     call ir_handleInterrupt
     mov %eax, %esp
+
+	mov $0x23, %ax
+    mov %ax, %ds
+    mov %ax, %es
 
     pop %eax
     pop %ebx

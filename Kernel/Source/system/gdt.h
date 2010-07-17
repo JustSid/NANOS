@@ -34,11 +34,13 @@
 #define GDT_FLAG_4K			0x800
 #define GDT_FLAG_32_BIT		0x400
 
-#define GDT_ENTIRES			5
+#define GDT_ENTIRES			6
 
 extern void gdt_setEntry(int index, unsigned int base, unsigned int limit, int flags);
 extern void gdt_commitEntries();
 
 extern void gdt_defaults(bool commitImmediately);
+
+extern void gdt_setTSSEntry(uint32_t entry);
 
 #endif

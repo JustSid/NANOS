@@ -25,8 +25,6 @@ static td_process *current_process	= NULL;
 static bool td_locked		= false;
 static bool td_processDied	= false;
 
-extern void td_dummy();
-
 void td_spawnProcess(void *entryPoint)
 {
 	td_locked = true;
@@ -77,7 +75,7 @@ void td_spawnProcess(void *entryPoint)
 			}
 		}
 		
-		// Ring 0 State
+		// Ring 3 State
 		struct ir_cpu_state state = 
 		{
 			.eax = 0,
@@ -89,8 +87,11 @@ void td_spawnProcess(void *entryPoint)
 			.ebp = 0,
 			
 			.eip	= (uint32_t)entryPoint,
-			.cs		= 0x08,
-			.eflags = 0x202,
+			.esp	= (uint32_t)(process->pstack + 4096),
+			
+			.cs		= 0x18 | 0x03,
+			.ss		= 0x20 | 0x03,
+			.eflags = 0x200,
 		};
 		
 		process->pid = pid;
@@ -125,8 +126,9 @@ ir_cpu_state *td_fireRunloop(uint32_t intr, ir_cpu_state *state)
 	}
 	
 	//cn_printf("Switching to process %i\n", current_process->pid);
-		
 	td_processDied = false;
+	
+	gdt_setTSSEntry((uint32_t)(current_process->pstate + 1));
 	return current_process->pstate;
 }
 
@@ -174,8 +176,6 @@ void td_unlock()
 {
 	td_locked = false;
 }
-
-
 
 int td_runLoop(int argc, char *argv[])
 {

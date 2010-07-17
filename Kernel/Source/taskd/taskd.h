@@ -24,6 +24,7 @@
 #include "stdlib.h"
 
 #include "interruptManager.h"
+#include "gdt.h"
 
 #include "console.h"
 #include "video.h"
