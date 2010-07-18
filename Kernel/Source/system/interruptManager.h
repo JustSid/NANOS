@@ -20,17 +20,11 @@
 #ifndef _INTERRUPT_H_
 #define _INTERRUPT_H_
 
-#include "console.h"
 #include "stdint.h"
-#include "kernel.h"
-#include "malloc.h"
-#include "string.h"
-
-#include "gdt.h"
-#include "idt.h"
 
 typedef struct ir_cpu_state
 {
+	// Registers
     uint32_t   eax;
     uint32_t   ebx;
     uint32_t   ecx;
@@ -39,8 +33,8 @@ typedef struct ir_cpu_state
     uint32_t   edi;
     uint32_t   ebp;
 	
-    uint32_t   intr;
-    uint32_t   error;
+    uint32_t   intr; // Interrupt number
+    uint32_t   error; // Error number. If the interrupt doesn't set a error number, this will be 0!
 	
     uint32_t   eip;
     uint32_t   cs;
@@ -59,9 +53,11 @@ typedef struct ir_interrupt_entry
 	struct ir_interrupt_entry *next;
 } ir_interrupt_entry;
 
+
 extern void ir_init();
 
 extern ir_interrupt_entry *ir_addInterrupt(uint32_t start, uint32_t end, ir_cpu_state *(*callback)(uint32_t intr, ir_cpu_state *state));
+extern void ir_removeInterrupt(ir_interrupt_entry *entry);
 
 extern ir_cpu_state *ir_handleInterrupt(ir_cpu_state *state);
 extern ir_cpu_state *ir_lastState();
