@@ -18,19 +18,22 @@
 
 .extern ir_handleInterrupt
 
+// There are two types of interrupts, the one which set a error number and the one which doesn't set one
+
+// This get's called if the CPU doesn't sets a error number
 .macro idt_stub nr
 .global idt_stub_\nr
 idt_stub_\nr:
-    pushl $0
+    pushl $0 // We set 0 as the error number. This makes the handling easier cause we don't need to differentiate between the interrupts that set a error number and the one which don't
     pushl $\nr
-    jmp ir_preHandler
+    jmp ir_preHandler // we call the pre handler
 .endm
 
 .macro idt_stub_error_code nr
 .global idt_stub_\nr
 idt_stub_\nr:
-    pushl $\nr
-    jmp ir_preHandler
+    pushl $\nr // This was a interrupt with an error number. We don't need to set one
+    jmp ir_preHandler // let the pre handler to the rest
 .endm
 
 idt_stub 0
@@ -58,7 +61,11 @@ idt_stub 33
 
 idt_stub 48
 
+
+// !---- Pre Handler ---- ! //
+// The pre handler gets called before our high level interrupt handler gets called. So we don't falsify the CPU state
 ir_preHandler:
+	// Push the current CPU state
 	push %ebp
     push %edi
     push %esi
@@ -67,19 +74,22 @@ ir_preHandler:
     push %ebx
     push %eax
 
+	// Reload the kernel data segment
 	mov $0x10, %ax
     mov %ax, %ds
     mov %ax, %es
 
-    push %esp
-    call ir_handleInterrupt
-    mov %eax, %esp
+    push %esp 
+    call ir_handleInterrupt // Calls our high-level handler 
+    mov %eax, %esp // Switch the stack. We have switched the CPU state context, so we need to switch the stack too.
 
+	// Reloads the user data segment
 	mov $0x23, %ax
     mov %ax, %ds
     mov %ax, %es
 
-    pop %eax
+	// Pop the state
+    pop %eax 
     pop %ebx
     pop %ecx
     pop %edx
@@ -87,5 +97,5 @@ ir_preHandler:
     pop %edi
     pop %ebp
 
-    add $8, %esp
+    add $8, %esp // Removes the error number from the stack.
     iret
