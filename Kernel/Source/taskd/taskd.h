@@ -30,8 +30,14 @@
 #include "video.h"
 #include "kernel.h"
 
+#define TD_TASK_PRIORITY_IDLE		2 
+#define TD_TASK_PRIORITY_LOW		3
+#define TD_TASK_PRIORITY_DEFAULT	4
+#define TD_TASK_PRIORITY_HIGH		5
+#define TD_TASK_PRIORITY_CRITICAL	6
+
 extern void td_init();
-extern void td_spawnProcess(void *entryPoint);
+extern void td_spawnProcess(void *entryPoint, uint8_t priority);
 extern void td_exit(int state);
 
 extern uint32_t td_currentPid();
@@ -42,6 +48,7 @@ extern void td_unlock();
 typedef struct td_process
 {
 	uint8_t			pstack[4096];
+	uint8_t			priority;
 	uint32_t		pid;
 	
 	ir_cpu_state	*pstate;

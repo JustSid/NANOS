@@ -25,8 +25,22 @@ static td_process *current_process	= NULL;
 static bool td_locked		= false;
 static bool td_processDied	= false;
 
-void td_spawnProcess(void *entryPoint)
+static uint32_t td_frame = 0;
+static int16_t	td_locks = 0; // The number of locks. If this is zero, the taskd isn't locked
+
+
+void td_spawnProcess(void *entryPoint, uint8_t priority)
 {
+	if(!entryPoint)
+	{
+		return;
+	}
+	
+	if(priority > TD_TASK_PRIORITY_CRITICAL || priority < TD_TASK_PRIORITY_IDLE)
+	{
+		priority = TD_TASK_PRIORITY_DEFAULT;
+	}
+	
 	td_locked = true;
 	td_process *process = (td_process *)malloc(sizeof(td_process));
 
@@ -44,6 +58,7 @@ void td_spawnProcess(void *entryPoint)
 		}
 		
 		
+		// Looks for an unique pid, this will be later used to identifie a process
 		uint32_t pid = 0;
 		bool     found = false;
 		
@@ -75,7 +90,8 @@ void td_spawnProcess(void *entryPoint)
 			}
 		}
 		
-		// Ring 3 State
+		
+		// Ring 3 CPU State
 		struct ir_cpu_state state = 
 		{
 			.eax = 0,
@@ -94,21 +110,26 @@ void td_spawnProcess(void *entryPoint)
 			.eflags = 0x200,
 		};
 		
+		// Process setup
 		process->pid = pid;
+		process->priority = priority;
 		process->pstate = (void *)(process->pstack + 4096) - sizeof(ir_cpu_state);
 		*process->pstate = state;
 		
 		process->next = NULL;
-		
-		//cn_printf("Spawning process %p with pid %i\n", entryPoint, pid);
 	}
 	
 	td_locked = false;
 }
 
+// -------------------------------
+// Task management:
+// Manages the task switches and process exits.
+// -------------------------------
+
 ir_cpu_state *td_fireRunloop(uint32_t intr, ir_cpu_state *state)
 {
-	if(td_locked)
+	if(td_locked) // The taskd is locked, so we don't want to switch the current context
 		return state;
 	
 	if(!first_process)
@@ -116,16 +137,18 @@ ir_cpu_state *td_fireRunloop(uint32_t intr, ir_cpu_state *state)
 	
 	if(current_process && !td_processDied)
 	{
-		current_process->pstate = state;
-		current_process = current_process->next;
+		if((td_frame % current_process->priority) == 0)
+		{
+			current_process->pstate = state;
+			current_process = current_process->next;
+		}
+		
+		td_frame += 1;
 	}
 	
 	if(!current_process)
-	{
 		current_process = first_process;
-	}
 	
-	//cn_printf("Switching to process %i\n", current_process->pid);
 	td_processDied = false;
 	
 	gdt_setTSSEntry((uint32_t)(current_process->pstate + 1));
@@ -157,6 +180,28 @@ void td_exit(int state)
 	td_locked = false;
 }
 
+// -------------------------------
+// Runtime:
+// Controls the locking and provides functions for processes
+// -------------------------------
+
+void td_lock()
+{
+	td_locks += 1;
+	td_locked = true;
+}
+
+void td_unlock()
+{
+	td_locks -= 1;
+	
+	if(td_locks <= 0)
+	{
+		td_locked = false;
+		td_locks = 0;
+	}
+}
+
 uint32_t td_currentPid()
 {
 	if(current_process)
@@ -167,31 +212,23 @@ uint32_t td_currentPid()
 	return 0;
 }
 
-void td_lock()
-{
-	td_locked = true;
-}
-
-void td_unlock()
-{
-	td_locked = false;
-}
-
-int td_runLoop(int argc, char *argv[])
+void td_runLoop()
 {
 	while(1)
 	{
 		
 	}
-	
-	return EXIT_SUCCESS;
 }
+
+// -------------------------------
+// Init
+// -------------------------------
 
 void td_init()
 {
 	cn_puts("Initializing taskd...");
 	
-	td_spawnProcess(td_runLoop);
+	td_spawnProcess(td_runLoop, TD_TASK_PRIORITY_IDLE); // We need at least one process.
 	ir_addInterrupt(0x20, 0x20, td_fireRunloop);
 	
 	cn_puts("[ok]\n");

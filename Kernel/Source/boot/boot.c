@@ -62,6 +62,6 @@ void boot_x86(struct multiboot_info *bootInfo)
 	
 	cn_putc('\n');
 	
-	td_spawnProcess(taskA);
-	td_spawnProcess(taskB);
+	td_spawnProcess(taskA, TD_TASK_PRIORITY_DEFAULT);
+	td_spawnProcess(taskB, TD_TASK_PRIORITY_DEFAULT);
 }
