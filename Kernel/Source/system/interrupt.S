@@ -56,8 +56,22 @@ idt_stub 16
 idt_stub_error_code 17
 idt_stub 18
 
-idt_stub 32
-idt_stub 33
+idt_stub 32 // Timer
+idt_stub 33 // PS/2 1
+idt_stub 34 // Cascade
+idt_stub 35 // RS-232
+idt_stub 36 // RS 232
+idt_stub 37 // LPT 2
+idt_stub 38 // Floppy 
+idt_stub 39 // LPT 1
+idt_stub 40 // Real Time Clock
+idt_stub 41 // 
+idt_stub 42 // IDE/ATAPI/ATA
+idt_stub 43 // IDE/ATAPI/ATA
+idt_stub 44 // PS/2 2
+idt_stub 45 // FPU
+idt_stub 46 // primary IDE/ATAPI/ATA
+idt_stub 47 // secondary IDE/ATAPI/ATA
 
 idt_stub 48
 
@@ -89,7 +103,7 @@ ir_preHandler:
     mov %ax, %es
 
 	// Pop the state
-    pop %eax 
+    pop %eax
     pop %ebx
     pop %ecx
     pop %edx

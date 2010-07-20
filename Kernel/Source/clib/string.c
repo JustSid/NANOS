@@ -205,6 +205,7 @@ int sprintf(char *dst, const char *format, ...)
 	dst[0] = '\0';
 	
 	int i=0;
+	
 	while(*format != '\0')
 	{
 		if(*format == '%')

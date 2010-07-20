@@ -46,6 +46,25 @@ void td_spawnProcess(void *entryPoint, uint8_t priority)
 
 	if(process)
 	{
+		process->pstack = (uint8_t *)malloc(4096 * sizeof(uint8_t)); 
+		
+		if(!process->pstack)
+		{
+			free(process);
+			return;
+		}
+		
+		process->pstate = (ir_cpu_state *)malloc(sizeof(ir_cpu_state));
+		
+		if(!process->pstate)
+		{
+			free(process->pstack);
+			free(process);
+			
+			return;
+		}
+		
+		
 		if(!first_process)
 		{
 			first_process = process;
@@ -113,7 +132,6 @@ void td_spawnProcess(void *entryPoint, uint8_t priority)
 		// Process setup
 		process->pid = pid;
 		process->priority = priority;
-		process->pstate = (void *)(process->pstack + 4096) - sizeof(ir_cpu_state);
 		*process->pstate = state;
 		
 		process->next = NULL;
@@ -141,6 +159,8 @@ ir_cpu_state *td_fireRunloop(uint32_t intr, ir_cpu_state *state)
 		{
 			current_process->pstate = state;
 			current_process = current_process->next;
+
+			//cn_printf("Switched to process %i", current_process->pid);
 		}
 		
 		td_frame += 1;
@@ -165,7 +185,9 @@ void td_taskExit()
 	
 	if(temp)
 	{
+		free(current_process->pstack);
 		free(current_process);
+		
 		td_processDied = true;
 		
 		temp->next = temp->next->next;		

@@ -93,6 +93,20 @@ extern void idt_stub_18();
 
 extern void idt_stub_32();
 extern void idt_stub_33();
+extern void idt_stub_34();
+extern void idt_stub_35();
+extern void idt_stub_36();
+extern void idt_stub_37();
+extern void idt_stub_38();
+extern void idt_stub_39();
+extern void idt_stub_40();
+extern void idt_stub_41();
+extern void idt_stub_42();
+extern void idt_stub_43();
+extern void idt_stub_44();
+extern void idt_stub_45();
+extern void idt_stub_46();
+extern void idt_stub_47();
 
 extern void idt_stub_48();
 
@@ -122,6 +136,20 @@ void idt_defaults(bool commitImmediately)
 	
     idt_setEntry(32, idt_stub_32, 0x8, IDT_FLAG_INTERRUPT_GATE | IDT_FLAG_RING0 | IDT_FLAG_PRESENT);
     idt_setEntry(33, idt_stub_33, 0x8, IDT_FLAG_INTERRUPT_GATE | IDT_FLAG_RING0 | IDT_FLAG_PRESENT);
+	idt_setEntry(34, idt_stub_34, 0x8, IDT_FLAG_INTERRUPT_GATE | IDT_FLAG_RING0 | IDT_FLAG_PRESENT);
+	idt_setEntry(35, idt_stub_35, 0x8, IDT_FLAG_INTERRUPT_GATE | IDT_FLAG_RING0 | IDT_FLAG_PRESENT);
+	idt_setEntry(36, idt_stub_36, 0x8, IDT_FLAG_INTERRUPT_GATE | IDT_FLAG_RING0 | IDT_FLAG_PRESENT);
+	idt_setEntry(37, idt_stub_37, 0x8, IDT_FLAG_INTERRUPT_GATE | IDT_FLAG_RING0 | IDT_FLAG_PRESENT);
+	idt_setEntry(38, idt_stub_38, 0x8, IDT_FLAG_INTERRUPT_GATE | IDT_FLAG_RING0 | IDT_FLAG_PRESENT);
+	idt_setEntry(39, idt_stub_39, 0x8, IDT_FLAG_INTERRUPT_GATE | IDT_FLAG_RING0 | IDT_FLAG_PRESENT);
+	idt_setEntry(40, idt_stub_40, 0x8, IDT_FLAG_INTERRUPT_GATE | IDT_FLAG_RING0 | IDT_FLAG_PRESENT);
+	idt_setEntry(41, idt_stub_41, 0x8, IDT_FLAG_INTERRUPT_GATE | IDT_FLAG_RING0 | IDT_FLAG_PRESENT);
+	idt_setEntry(42, idt_stub_42, 0x8, IDT_FLAG_INTERRUPT_GATE | IDT_FLAG_RING0 | IDT_FLAG_PRESENT);
+	idt_setEntry(43, idt_stub_43, 0x8, IDT_FLAG_INTERRUPT_GATE | IDT_FLAG_RING0 | IDT_FLAG_PRESENT);
+	idt_setEntry(44, idt_stub_44, 0x8, IDT_FLAG_INTERRUPT_GATE | IDT_FLAG_RING0 | IDT_FLAG_PRESENT);
+	idt_setEntry(45, idt_stub_45, 0x8, IDT_FLAG_INTERRUPT_GATE | IDT_FLAG_RING0 | IDT_FLAG_PRESENT);
+	idt_setEntry(46, idt_stub_46, 0x8, IDT_FLAG_INTERRUPT_GATE | IDT_FLAG_RING0 | IDT_FLAG_PRESENT);
+	idt_setEntry(47, idt_stub_47, 0x8, IDT_FLAG_INTERRUPT_GATE | IDT_FLAG_RING0 | IDT_FLAG_PRESENT);
 	
     idt_setEntry(48, idt_stub_48, 0x8, IDT_FLAG_INTERRUPT_GATE | IDT_FLAG_RING3 | IDT_FLAG_PRESENT);
 	

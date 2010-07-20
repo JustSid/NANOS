@@ -22,12 +22,22 @@
 
 void taskA()
 {
-	cn_printf("Task A, pid: %i\n", td_currentPid());
+	int i;
+	for(i=0; i<5; i++)
+	{
+		cn_printf("Task A, pid: %i\n", td_currentPid());
+	}
+	
 	td_exit(EXIT_SUCCESS);
 }
 
 void taskB()
 {
-	cn_printf("Task B, pid: %i\n", td_currentPid());
+	int i;
+	for(i=0; i<5; i++)
+	{
+		cn_printf("Task B, pid: %i\n", td_currentPid());
+	}
+	
 	td_exit(EXIT_SUCCESS);
 }

@@ -17,6 +17,7 @@
 //
 
 #include "kernel.h"
+#include "syscall.h"
 
 #include "multiboot.h"
 #include "video.h"
@@ -27,6 +28,7 @@
 #include "interruptManager.h"
 
 #include "taskd.h"
+#include "time.h"
 #include "test.h"
 
 void boot_x86(struct multiboot_info *bootInfo)
@@ -51,7 +53,9 @@ void boot_x86(struct multiboot_info *bootInfo)
 	// Actual boot 
 	mm_init(bootInfo);	// Initialize the memory mapping
 	ir_init();			// Initialize the interrupt controller
-	td_init();			// Kickof the task deamon	
+	syscall_init();		// Allows the use of syscalls
+	td_init();			// Kickof the task daemon	
+	tm_init();			// Launch the time daemon
 	
 	/*// Print the memory footprint
 	cn_puts("Memory footprint:\n");

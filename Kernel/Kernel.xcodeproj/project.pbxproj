@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		E92C6EC811F1A6B000CAF14E /* gdt.c in Sources */ = {isa = PBXBuildFile; fileRef = E92C6EC711F1A6B000CAF14E /* gdt.c */; };
 		E92C6ECB11F1A6BE00CAF14E /* idt.c in Sources */ = {isa = PBXBuildFile; fileRef = E92C6ECA11F1A6BE00CAF14E /* idt.c */; };
+		E95C2D8511F60797000997F9 /* time.c in Sources */ = {isa = PBXBuildFile; fileRef = E95C2D8411F60797000997F9 /* time.c */; };
+		E95C2D9E11F62B43000997F9 /* cmos.c in Sources */ = {isa = PBXBuildFile; fileRef = E95C2D9D11F62B43000997F9 /* cmos.c */; };
+		E95C2DAF11F62EA3000997F9 /* syscall.c in Sources */ = {isa = PBXBuildFile; fileRef = E95C2DAE11F62EA3000997F9 /* syscall.c */; };
 		E9AB894C11EDE16E00194DB9 /* test.c in Sources */ = {isa = PBXBuildFile; fileRef = E9AB894B11EDE16E00194DB9 /* test.c */; };
 		E9BF579B11EB5DAF00D31736 /* boot.c in Sources */ = {isa = PBXBuildFile; fileRef = E9FE21B811EAA2F700C76AC0 /* boot.c */; };
 		E9BF57E711EB663100D31736 /* video.c in Sources */ = {isa = PBXBuildFile; fileRef = E9BF57E511EB663100D31736 /* video.c */; };
@@ -30,6 +33,12 @@
 		E92C704911F2095200CAF14E /* Kernel */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Kernel; sourceTree = BUILT_PRODUCTS_DIR; };
 		E959E8DE11ECAFE30050C437 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		E959E8DF11ECAFE30050C437 /* Makefile.ld */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = Makefile.ld; sourceTree = "<group>"; };
+		E95C2D8311F60797000997F9 /* time.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = time.h; sourceTree = "<group>"; };
+		E95C2D8411F60797000997F9 /* time.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = time.c; sourceTree = "<group>"; };
+		E95C2D9C11F62B43000997F9 /* cmos.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cmos.h; sourceTree = "<group>"; };
+		E95C2D9D11F62B43000997F9 /* cmos.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cmos.c; sourceTree = "<group>"; };
+		E95C2DAD11F62EA3000997F9 /* syscall.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = syscall.h; sourceTree = "<group>"; };
+		E95C2DAE11F62EA3000997F9 /* syscall.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = syscall.c; sourceTree = "<group>"; };
 		E9AB894A11EDE16E00194DB9 /* test.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = test.h; sourceTree = "<group>"; };
 		E9AB894B11EDE16E00194DB9 /* test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = test.c; sourceTree = "<group>"; };
 		E9BF57E511EB663100D31736 /* video.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = video.c; sourceTree = "<group>"; };
@@ -91,6 +100,8 @@
 		E9D1012011EC7FCA00A03E83 /* system */ = {
 			isa = PBXGroup;
 			children = (
+				E95C2D9D11F62B43000997F9 /* cmos.c */,
+				E95C2D9C11F62B43000997F9 /* cmos.h */,
 				E9D1012111EC7FCA00A03E83 /* console.c */,
 				E9D1012211EC7FCA00A03E83 /* console.h */,
 				E92C6EC711F1A6B000CAF14E /* gdt.c */,
@@ -106,6 +117,10 @@
 				E9D1012A11EC7FCA00A03E83 /* mmap.h */,
 				E9D1012C11EC7FCA00A03E83 /* multiboot.h */,
 				E9DD891511F0A18E00555D81 /* port.h */,
+				E95C2DAE11F62EA3000997F9 /* syscall.c */,
+				E95C2DAD11F62EA3000997F9 /* syscall.h */,
+				E95C2D8411F60797000997F9 /* time.c */,
+				E95C2D8311F60797000997F9 /* time.h */,
 			);
 			path = system;
 			sourceTree = "<group>";
@@ -230,6 +245,9 @@
 				E9DD88A411F06EC700555D81 /* malloc.c in Sources */,
 				E92C6EC811F1A6B000CAF14E /* gdt.c in Sources */,
 				E92C6ECB11F1A6BE00CAF14E /* idt.c in Sources */,
+				E95C2D8511F60797000997F9 /* time.c in Sources */,
+				E95C2D9E11F62B43000997F9 /* cmos.c in Sources */,
+				E95C2DAF11F62EA3000997F9 /* syscall.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

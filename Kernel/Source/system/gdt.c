@@ -40,9 +40,7 @@ void gdt_commitEntries()
 	{
         uint16_t	limit;
         void		*pointer;
-    } __attribute__((packed)) 
-	
-	gdtp = 
+    } __attribute__((packed)) gdtp = 
 	{
         .limit		= GDT_ENTIRES * 8 - 1,
         .pointer	= gdt_table,

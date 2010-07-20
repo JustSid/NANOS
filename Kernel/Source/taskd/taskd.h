@@ -47,7 +47,7 @@ extern void td_unlock();
 
 typedef struct td_process
 {
-	uint8_t			pstack[4096];
+	uint8_t			*pstack;
 	uint8_t			priority;
 	uint32_t		pid;
 	
