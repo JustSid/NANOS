@@ -31,6 +31,8 @@
 #include "time.h"
 #include "test.h"
 
+#include "keyboard.h"
+
 void boot_x86(struct multiboot_info *bootInfo)
 {
 	// Fasten your seatbelt and be ready to buy new hardware :)
