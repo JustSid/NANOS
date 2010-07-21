@@ -56,6 +56,7 @@ void boot_x86(struct multiboot_info *bootInfo)
 	syscall_init();		// Allows the use of syscalls
 	td_init();			// Kickof the task daemon	
 	tm_init();			// Launch the time daemon
+	init_keyboard();
 	
 	/*// Print the memory footprint
 	cn_puts("Memory footprint:\n");
