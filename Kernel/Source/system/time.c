@@ -33,7 +33,6 @@ void tm_init()
 {
 	cmos_setRTCFlags(CMOS_RTC_FLAG_24HOUR | CMOS_RTC_FLAG_BINARY);
 	
-	tm_pollTime();
 	td_spawnProcess(timed, TD_TASK_PRIORITY_DEFAULT);
 }
 

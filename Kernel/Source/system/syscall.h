@@ -31,6 +31,6 @@ typedef enum
 } syscall_type;
 
 extern void syscall(uint32_t type);
-extern void syscall_init();
+extern void sc_init();
 
 #endif

@@ -23,6 +23,7 @@
 		E9DD86CC11EF4CD400555D81 /* kernel.c in Sources */ = {isa = PBXBuildFile; fileRef = E9DD86CB11EF4CD400555D81 /* kernel.c */; };
 		E9DD87D811EFC5D800555D81 /* string.c in Sources */ = {isa = PBXBuildFile; fileRef = E9DD87D711EFC5D800555D81 /* string.c */; };
 		E9DD88A411F06EC700555D81 /* malloc.c in Sources */ = {isa = PBXBuildFile; fileRef = E9DD88A211F06EC700555D81 /* malloc.c */; };
+		E9E94B7B11F7285A00CDB07B /* keyboard.c in Sources */ = {isa = PBXBuildFile; fileRef = E9E94B7A11F7285A00CDB07B /* keyboard.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -64,6 +65,9 @@
 		E9DD88A311F06EC700555D81 /* malloc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = malloc.h; sourceTree = "<group>"; };
 		E9DD88C011F06F8400555D81 /* stdlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stdlib.h; sourceTree = "<group>"; };
 		E9DD891511F0A18E00555D81 /* port.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = port.h; sourceTree = "<group>"; };
+		E9E94B7911F7285A00CDB07B /* keyboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = keyboard.h; sourceTree = "<group>"; };
+		E9E94B7A11F7285A00CDB07B /* keyboard.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = keyboard.c; sourceTree = "<group>"; };
+		E9E94B9011F7289A00CDB07B /* keymap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = keymap.h; sourceTree = "<group>"; };
 		E9FE21B611EAA2D800C76AC0 /* bootx86.S */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = bootx86.S; sourceTree = "<group>"; };
 		E9FE21B811EAA2F700C76AC0 /* boot.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = boot.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -121,6 +125,9 @@
 				E95C2DAD11F62EA3000997F9 /* syscall.h */,
 				E95C2D8411F60797000997F9 /* time.c */,
 				E95C2D8311F60797000997F9 /* time.h */,
+				E9E94B7A11F7285A00CDB07B /* keyboard.c */,
+				E9E94B7911F7285A00CDB07B /* keyboard.h */,
+				E9E94B9011F7289A00CDB07B /* keymap.h */,
 			);
 			path = system;
 			sourceTree = "<group>";
@@ -248,6 +255,7 @@
 				E95C2D8511F60797000997F9 /* time.c in Sources */,
 				E95C2D9E11F62B43000997F9 /* cmos.c in Sources */,
 				E95C2DAF11F62EA3000997F9 /* syscall.c in Sources */,
+				E9E94B7B11F7285A00CDB07B /* keyboard.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

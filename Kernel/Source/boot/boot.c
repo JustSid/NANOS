@@ -55,7 +55,7 @@ void boot_x86(struct multiboot_info *bootInfo)
 	// Actual boot 
 	mm_init(bootInfo);	// Initialize the memory mapping
 	ir_init();			// Initialize the interrupt controller
-	syscall_init();		// Allows the use of syscalls
+	sc_init();			// Allows the use of syscalls
 	td_init();			// Kickof the task daemon	
 	tm_init();			// Launch the time daemon
 	init_keyboard();
@@ -68,7 +68,6 @@ void boot_x86(struct multiboot_info *bootInfo)
 	cn_printf("   All:   %i Kb\n", m_getOccupiedSize(M_FLAG_ALL)	/ 1024);*/
 	
 	cn_putc('\n');
-	
 	td_spawnProcess(taskA, TD_TASK_PRIORITY_DEFAULT);
 	td_spawnProcess(taskB, TD_TASK_PRIORITY_DEFAULT);
 }

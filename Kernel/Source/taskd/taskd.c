@@ -28,6 +28,7 @@ static bool td_processDied	= false;
 static uint32_t td_frame = 0;
 static int16_t	td_locks = 0; // The number of locks. If this is zero, the taskd isn't locked
 
+#define TD_TASK_STACKSIZE 4096
 
 void td_spawnProcess(void *entryPoint, uint8_t priority)
 {
@@ -46,7 +47,7 @@ void td_spawnProcess(void *entryPoint, uint8_t priority)
 
 	if(process)
 	{
-		process->pstack = (uint8_t *)malloc(4096 * sizeof(uint8_t)); 
+		process->pstack = (uint8_t *)malloc(TD_TASK_STACKSIZE * sizeof(uint8_t)); 
 		
 		if(!process->pstack)
 		{
@@ -109,30 +110,24 @@ void td_spawnProcess(void *entryPoint, uint8_t priority)
 			}
 		}
 		
-		
-		// Ring 3 CPU State
-		struct ir_cpu_state state = 
-		{
-			.eax = 0,
-			.ebx = 0,
-			.ecx = 0,
-			.edx = 0,
-			.esi = 0,
-			.edi = 0,
-			.ebp = 0,
-			
-			.eip	= (uint32_t)entryPoint,
-			.esp	= (uint32_t)(process->pstack + 4096),
-			
-			.cs		= 0x18 | 0x03,
-			.ss		= 0x20 | 0x03,
-			.eflags = 0x200,
-		};
-		
 		// Process setup
 		process->pid = pid;
 		process->priority = priority;
-		*process->pstate = state;
+
+		process->pstate->eax = 0;
+		process->pstate->ebx = 0;
+		process->pstate->ecx = 0;
+		process->pstate->edx = 0;
+		process->pstate->esi = 0;
+		process->pstate->edi = 0;
+		process->pstate->ebp = 0;
+		
+		process->pstate->eip = (uint32_t)entryPoint;
+		process->pstate->esp = (uint32_t)process->pstack + TD_TASK_STACKSIZE;
+		
+		process->pstate->cs		= 0x18 | 0x03;
+		process->pstate->ss		= 0x20 | 0x03;
+		process->pstate->eflags = 0x200;
 		
 		process->next = NULL;
 	}

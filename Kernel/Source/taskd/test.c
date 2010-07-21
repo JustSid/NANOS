@@ -19,6 +19,7 @@
 #include "test.h"
 #include "stdlib.h"
 #include "console.h"
+#include "syscall.h"
 
 void taskA()
 {
@@ -26,6 +27,7 @@ void taskA()
 	for(i=0; i<5; i++)
 	{
 		cn_printf("Task A, pid: %i\n", td_currentPid());
+		//syscall(syscall_type_sleep); // Buggy!
 	}
 	
 	td_exit(EXIT_SUCCESS);
@@ -37,6 +39,7 @@ void taskB()
 	for(i=0; i<5; i++)
 	{
 		cn_printf("Task B, pid: %i\n", td_currentPid());
+		//syscall(syscall_type_sleep); // Buggy!
 	}
 	
 	td_exit(EXIT_SUCCESS);

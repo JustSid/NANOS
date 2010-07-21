@@ -21,6 +21,8 @@
 #include "taskd.h"
 #include "time.h"
 
+#include "console.h"
+
 extern ir_cpu_state *td_fireRunloop(uint32_t intr, ir_cpu_state *state);
 
 ir_cpu_state *_syscallEx(uint32_t intr, ir_cpu_state *state)
@@ -57,11 +59,11 @@ ir_cpu_state *_syscallEx(uint32_t intr, ir_cpu_state *state)
 
 void syscall(uint32_t type)
 {
-	__asm__ volatile("int $0x30" : : "a" (0));
+	__asm__ volatile("int $0x30" : : "a" (type));
 }
 
 
-void syscall_init()
+void sc_init()
 {
 	ir_addInterrupt(0x30, 0x30, _syscallEx);
 }
