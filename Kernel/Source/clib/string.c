@@ -271,6 +271,7 @@ int sprintf(char *dst, const char *format, ...)
 		i++;
 	}
 	
+
 	va_end(param);
 	return i;
 }

@@ -18,22 +18,38 @@
 
 #include "time.h"
 
-static uint8_t tm_clock_second = 0;
-static uint8_t tm_clock_minute = 0;
-static uint8_t tm_clock_hour = 0;
+static tm_date *_tm_current_date = NULL;
+static bool		_tm_drawDate = true;
 
 void tm_pollTime()
 {
-	tm_clock_second = cmos_readData(CMOS_REGISTER_SECOND);
-	tm_clock_minute = cmos_readData(CMOS_REGISTER_MINUTE);
-	tm_clock_hour	= cmos_readData(CMOS_REGISTER_HOUR);
+	if(_tm_current_date)
+	{
+		uint8_t temp = _tm_current_date->hour;
+		
+		_tm_current_date->second	= cmos_readData(CMOS_REGISTER_SECOND);
+		_tm_current_date->minute	= cmos_readData(CMOS_REGISTER_MINUTE);
+		_tm_current_date->hour		= cmos_readData(CMOS_REGISTER_HOUR);
+		
+		if(temp != _tm_current_date->hour) // Update the week, month, year etc. only every hour.
+		{
+			_tm_current_date->day_of_week	= cmos_readData(CMOS_REGISTER_WDAY);
+			_tm_current_date->day_of_month	= cmos_readData(CMOS_REGISTER_DMONTH);
+			
+			_tm_current_date->month = cmos_readData(CMOS_REGISTER_MONTH);
+			_tm_current_date->year	= cmos_readData(CMOS_REGISTER_YEAR);
+		}
+	}
 }
 
-void tm_init()
+tm_date *tm_current_date()
 {
-	cmos_setRTCFlags(CMOS_RTC_FLAG_24HOUR | CMOS_RTC_FLAG_BINARY);
-	
-	td_spawnProcess(timed, TD_TASK_PRIORITY_DEFAULT);
+	return _tm_current_date;
+}
+
+void tm_drawDate(bool trueOrFalse)
+{
+	_tm_drawDate = trueOrFalse;
 }
 
 void timed()
@@ -42,19 +58,41 @@ void timed()
 	{
 		syscall(syscall_type_clock); // Refresh the clock
 		
-		char temp[12]; // Time format xx:xx:xx = 8 characters + \0. However, if there is an error with the CMOS or the RTC, it's possible that we have something like: xxx:xxx:xxx = 11 + \0!
-		memset(temp, 0, 12);
-		
-		sprintf(temp, "%i:%i:%i", tm_clock_hour, tm_clock_minute, tm_clock_second);
-		
-		int i;
-		int j = strlen(temp);
-		for(i=0; i<j; i++)
+		if(_tm_drawDate)
 		{
-			int pos = VIDEO_SIZE_X - (j - i);
+			char temp[12];
 			
-			vd_setChar(pos, 0, temp[i]);
-			vd_setAttribute(pos, 0, VIDEO_COLOR_WHITE);
+			memset(temp, 0, 12);
+			sprintf(temp, "%i:%i:%i", _tm_current_date->hour, _tm_current_date->minute, _tm_current_date->second);
+			
+			int i;
+			int j = strlen(temp);
+			int k = 0;
+			
+			for(i=0; i<12; i++)
+			{
+				int pos = VIDEO_SIZE_X - (12 - i);
+				
+				if(i >= 12 - j)
+				{
+					vd_setChar(pos, 0, temp[k]);
+					k++;
+				}
+				else 
+				{
+					vd_setChar(pos, 0, ' ');
+				}
+
+				vd_setAttribute(pos, 0, VIDEO_COLOR_WHITE);
+			}
 		}
 	}
+}
+
+void tm_init()
+{
+	_tm_current_date = (tm_date *)malloc(sizeof(tm_date));
+	
+	cmos_setRTCFlags(CMOS_RTC_FLAG_24HOUR | CMOS_RTC_FLAG_BINARY);
+	td_spawnProcess(timed, TD_TASK_PRIORITY_DEFAULT);
 }

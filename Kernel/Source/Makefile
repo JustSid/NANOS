@@ -8,6 +8,7 @@ ASFLAGS = -m32
 
 CFLAGS = -m32 -Wall -g -fno-stack-protector
 CFLAGS += -I clib
+CFLAGS += -I shell
 CFLAGS += -I system
 CFLAGS += -I taskd
 CFLAGS += -I video

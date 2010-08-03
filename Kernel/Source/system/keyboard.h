@@ -2,8 +2,8 @@
 //  keyboard.h
 //  NANOS
 //
-//  Created by Muffel
-//  Copyright © 2010 by Muffel
+//  Created by Sidney Just
+//  Copyright © 2010 by Sidney Just
 //  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated 
 //  documentation files (the "Software"), to deal in the Software without restriction, including without limitation 
 //  the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, 
@@ -19,25 +19,19 @@
 #ifndef _KEYBOARD_H_
 #define _KEYBOARD_H_
 
-#include "interruptManager.h"
-#include "console.h"
-#include "port.h"
+#include "keymap.h"
+#include "malloc.h"
 
-#define _SCANBUFFER_
+typedef struct kb_callback_map
+{
+	void (*key_down)(unsigned char key);
+	
+	struct kb_callback_map *next;
+} kb_callback_map;
 
-// the keyboard interupt handler
-ir_cpu_state *keyboard_callback(uint32_t interrupt, ir_cpu_state *state);
+extern void kb_init();
+extern void kb_keyDown(unsigned char key);
 
-//
-void init_keyboard();
-
-char GetLastInput();
-#define SCROLL_LOCK 0x01
-#define NUM_LOCK 0x02
-#define CAPS_LOCK 0x04
-
-
-// table with the scan_codes to translate the input
-
+kb_callback_map *kb_addKeyboardHook();
 
 #endif

@@ -1,5 +1,5 @@
 //
-//  keymap.h
+//  keymap.c
 //  NANOS
 //
 //  Created by Muffel
@@ -16,27 +16,65 @@
 //  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#ifndef _KEYMAP_H_
-#define _KEYMAP_H_
+#include "keymap.h"
 
-#include "string.h"
-#include "stdint.h"
-#include "malloc.h"
+static km_layout *km_current_layout = NULL;
 
-#include "console.h"
-
-typedef struct
+km_layout *km_createLayout(const char *name)
 {
-	unsigned char layout_noCaps[128];
-	unsigned char layout_caps[128];
+	km_layout *temp = (km_layout *)malloc(sizeof(km_layout));
 	
-	char *name;
-} km_layout;
+	if(temp)
+	{
+		temp->name = (char *)malloc(strlen(name) * sizeof(char));
+		if(!temp->name)
+		{
+			free(temp);
+			return NULL;
+		}
+		
+		strcpy(temp->name, name);
+		
+		int i;
+		for(i=0; i<128; i++)
+		{
+			temp->layout_noCaps[i]	= 0;
+			temp->layout_caps[i]	= 0;
+		}
+	}
+	
+	return temp;
+}
 
-extern km_layout *km_createLayout(const char *name);
-extern km_layout *km_copy(km_layout *layout);
+km_layout *km_copy(km_layout *layout)
+{
+	km_layout *temp = km_createLayout(layout->name);
+	
+	if(temp)
+	{
+		int i;
+		for(i=0; i<128; i++)
+		{
+			temp->layout_noCaps[i] = layout->layout_noCaps[i];
+			temp->layout_caps[i] = layout->layout_caps[i];
+		}
+	}
+	
+	return temp;
+}
 
-extern void km_setLayout(km_layout *layout);
-extern km_layout *km_currentLayout();
+void km_setLayout(km_layout *layout)
+{
+	if(km_current_layout)
+	{
+		free(km_current_layout->name);
+		free(km_current_layout);
+	}
+	
+	km_current_layout = km_copy(layout);
+}
 
-#endif
+km_layout *km_currentLayout()
+{
+	return km_current_layout;
+}

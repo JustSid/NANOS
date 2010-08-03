@@ -1,9 +1,9 @@
 //
-//  test.h
+//  ps2.h
 //  NANOS
 //
-//  Created by Sidney Just
-//  Copyright © 2010 by Sidney Just
+//  Created by Muffel
+//  Copyright © 2010 by Muffel
 //  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated 
 //  documentation files (the "Software"), to deal in the Software without restriction, including without limitation 
 //  the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, 
@@ -16,12 +16,27 @@
 //  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#ifndef _TEST_H_
-#define _TEST_H_
+#ifndef _PS2_H_
+#define _PS2_H_
 
-#include "taskd.h"
+#include "stdint.h"
+#include "interruptManager.h"
+#include "keymap.h"
+#include "keyboard.h"
+#include "port.h"
 
-extern void taskA();
-extern void taskB();
+#define PS_KEY_SCROLL_LOCK	0x01
+#define PS_KEY_NUM_LOCK		0x02
+#define PS_KEY_CAPS_LOCK	0x04
+
+#define PS_KEY_SHIFT	0x01
+#define PS_KEY_NUM		0x02
+#define PS_KEY_ALT_GR	0x0c
+#define PS_KEY_STRG		0x04
+#define PS_KEY_ALT		0x08
+
+#define _SCANBUFFER_
+
+void ps_init();
 
 #endif

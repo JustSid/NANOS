@@ -20,15 +20,33 @@
 #define _TIME_H_
 
 #include "stdint.h"
+#include "stdbool.h"
 #include "string.h"
+#include "malloc.h"
 #include "cmos.h"
 #include "taskd.h"
 #include "syscall.h"
 #include "video.h"
 
-extern void timed();
+typedef struct
+{
+	uint8_t hour;
+	uint8_t minute;
+	uint8_t second;
+	
+	uint8_t day_of_week;
+	uint8_t day_of_month;
+	
+	uint8_t month;
+	uint8_t year; // only the last two digits of the year. However, we have currently 2010, it's impossible that this kernel runs in 19xx and 21xx is far away. 
+	// So, just add 2000 if you want the real year
+} tm_date;
 
 extern void tm_init();
 extern void tm_pollTime();
+
+extern void tm_drawDate(bool trueOrFalse);
+
+extern tm_date *tm_currentDate();
 
 #endif

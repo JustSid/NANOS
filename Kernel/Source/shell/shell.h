@@ -1,5 +1,5 @@
 //
-//  test.c
+//  shell.h
 //  NANOS
 //
 //  Created by Sidney Just
@@ -16,31 +16,19 @@
 //  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#include "test.h"
-#include "stdlib.h"
+
+#ifndef _SHELL_H_
+#define _SHELL_H_
+
+#include "stdint.h"
+#include "stdbool.h"
+#include "string.h"
+#include "malloc.h"
+
 #include "console.h"
-#include "syscall.h"
 
-void taskA()
-{
-	int i;
-	for(i=0; i<5; i++)
-	{
-		cn_printf("Task A, pid: %i\n", td_currentPid());
-		//syscall(syscall_type_sleep); // Buggy!
-	}
-	
-	td_exit(EXIT_SUCCESS);
-}
+#include "keyboard.h"
 
-void taskB()
-{
-	int i;
-	for(i=0; i<5; i++)
-	{
-		cn_printf("Task B, pid: %i\n", td_currentPid());
-		//syscall(syscall_type_sleep); // Buggy!
-	}
-	
-	td_exit(EXIT_SUCCESS);
-}
+extern void shelld();
+
+#endif

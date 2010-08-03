@@ -29,9 +29,12 @@
 
 #include "taskd.h"
 #include "time.h"
-#include "test.h"
 
+#include "keymap_def.h"
 #include "keyboard.h"
+#include "ps2.h"
+
+#include "shell.h"
 
 void boot_x86(struct multiboot_info *bootInfo)
 {
@@ -51,14 +54,26 @@ void boot_x86(struct multiboot_info *bootInfo)
 		// Color "NANOS"
 		vd_setAttribute(x, 0, (char)VIDEO_COLOR_WHITE);
 	}	
-	
+    
 	// Actual boot 
+	td_lock(); // Lock the task daemon. It doesn't matter that it isn't launched at this point. It prevents the taskd from switching into a process while we are still booting
+	
 	mm_init(bootInfo);	// Initialize the memory mapping
 	ir_init();			// Initialize the interrupt controller
 	sc_init();			// Allows the use of syscalls
 	td_init();			// Kickof the task daemon	
 	tm_init();			// Launch the time daemon
-	init_keyboard();
+    
+    int i;
+    for(i=0; i<5; i++)
+    {
+        void *temp = malloc(512); // HACK! Should be fixed soon!
+        temp = temp;
+    }
+    
+	km_init();
+	kb_init();
+	ps_init(); // Load the PS/2 controller
 	
 	/*// Print the memory footprint
 	cn_puts("Memory footprint:\n");
@@ -67,7 +82,6 @@ void boot_x86(struct multiboot_info *bootInfo)
 	cn_printf("   Free:  %i Kb\n", m_getOccupiedSize(M_FLAG_FREE)	/ 1024);
 	cn_printf("   All:   %i Kb\n", m_getOccupiedSize(M_FLAG_ALL)	/ 1024);*/
 	
-	cn_putc('\n');
-	td_spawnProcess(taskA, TD_TASK_PRIORITY_DEFAULT);
-	td_spawnProcess(taskB, TD_TASK_PRIORITY_DEFAULT);
+	td_spawnProcess(shelld, TD_TASK_PRIORITY_DEFAULT);
+	td_unlock(); // Unlock the taskd
 }

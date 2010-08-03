@@ -48,7 +48,6 @@ void td_spawnProcess(void *entryPoint, uint8_t priority)
 	if(process)
 	{
 		process->pstack = (uint8_t *)malloc(TD_TASK_STACKSIZE * sizeof(uint8_t)); 
-		
 		if(!process->pstack)
 		{
 			free(process);
@@ -56,7 +55,6 @@ void td_spawnProcess(void *entryPoint, uint8_t priority)
 		}
 		
 		process->pstate = (ir_cpu_state *)malloc(sizeof(ir_cpu_state));
-		
 		if(!process->pstate)
 		{
 			free(process->pstack);
@@ -124,12 +122,13 @@ void td_spawnProcess(void *entryPoint, uint8_t priority)
 		
 		process->pstate->eip = (uint32_t)entryPoint;
 		process->pstate->esp = (uint32_t)process->pstack + TD_TASK_STACKSIZE;
+			
+		process->pstate->cs	= 0x18 | 0x03;
+		process->pstate->ss	= 0x20 | 0x03;
 		
-		process->pstate->cs		= 0x18 | 0x03;
-		process->pstate->ss		= 0x20 | 0x03;
 		process->pstate->eflags = 0x200;
-		
-		process->next = NULL;
+
+		process->next	= NULL;
 	}
 	
 	td_locked = false;
@@ -165,8 +164,8 @@ ir_cpu_state *td_fireRunloop(uint32_t intr, ir_cpu_state *state)
 		current_process = first_process;
 	
 	td_processDied = false;
-	
 	gdt_setTSSEntry((uint32_t)(current_process->pstate + 1));
+	
 	return current_process->pstate;
 }
 
@@ -178,8 +177,9 @@ void td_taskExit()
 		temp = temp->next;
 	}
 	
-	if(temp)
+	if(temp && temp->next == current_process)
 	{
+		free(current_process->pstate);
 		free(current_process->pstack);
 		free(current_process);
 		
@@ -233,7 +233,7 @@ void td_runLoop()
 {
 	while(1)
 	{
-		
+	
 	}
 }
 

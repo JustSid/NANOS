@@ -40,7 +40,7 @@ void cn_setCursor(bool visible)
 {
 	cn_cursorVisible = visible;
 	
-	if(cn_cursorVisible == true)
+	if(cn_cursorVisible == false)
 	{
 		vd_setCursor(cn_screenPos_x, cn_screenPos_y + VIDEO_SIZE_Y);
 	}

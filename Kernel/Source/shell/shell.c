@@ -1,9 +1,9 @@
 //
-//  keymap.h
+//  shell.c
 //  NANOS
 //
-//  Created by Muffel
-//  Copyright © 2010 by Muffel
+//  Created by Sidney Just
+//  Copyright © 2010 by Sidney Just
 //  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated 
 //  documentation files (the "Software"), to deal in the Software without restriction, including without limitation 
 //  the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, 
@@ -16,27 +16,26 @@
 //  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#ifndef _KEYMAP_H_
-#define _KEYMAP_H_
+#include "shell.h"
 
-#include "string.h"
-#include "stdint.h"
-#include "malloc.h"
+static kb_callback_map *sd_keyboardCallback = NULL;
 
-#include "console.h"
-
-typedef struct
+void sd_keyDown(unsigned char key)
 {
-	unsigned char layout_noCaps[128];
-	unsigned char layout_caps[128];
+	cn_putc((signed char)key);
+}
+
+void shelld()
+{
+	sd_keyboardCallback = kb_addKeyboardHook();
+	sd_keyboardCallback->key_down = sd_keyDown;
 	
-	char *name;
-} km_layout;
-
-extern km_layout *km_createLayout(const char *name);
-extern km_layout *km_copy(km_layout *layout);
-
-extern void km_setLayout(km_layout *layout);
-extern km_layout *km_currentLayout();
-
-#endif
+	cn_cls();
+	cn_puts("NANOS Shell. Don't panic, it loves you!\n");
+	cn_puts("> ");
+	
+	while(1)
+	{
+		
+	}
+}

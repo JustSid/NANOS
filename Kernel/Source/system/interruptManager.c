@@ -28,7 +28,6 @@
 static ir_cpu_state *_ir_lastState = NULL; // Last known CPU state. Gets refreshed if an interrupt is fired
 
 static ir_interrupt_entry *first_entry	= NULL; // The list of interrupt listener, this is the first element
-static ir_interrupt_entry *last_entry	= NULL; // The last element of the list. Every new listener will be attached to this element and than this entry becomes the new element
 
 // Adds a listener for a specific interrupt or a range of interrupts. start and end determine the range of interrupts (eg. 0x20 to 0x2f) and callback is a C function that gets called
 // if a interrupt matches the specified range.
@@ -60,25 +59,33 @@ ir_interrupt_entry *ir_addInterrupt(uint32_t start, uint32_t end, ir_cpu_state *
 		start = temp;
 	}
 	
+    ir_interrupt_entry *entry;
+    
 	if(!first_entry) 
 	{
 		// We have no entrys yet, so we create new one. This is the first and last element, as it is the only one
-		last_entry = (ir_interrupt_entry *)malloc(sizeof(ir_interrupt_entry));
-		first_entry = last_entry;
+		first_entry = (ir_interrupt_entry *)malloc(sizeof(ir_interrupt_entry));
+        entry = first_entry;
 	}
 	else 
 	{
-		last_entry->next = (ir_interrupt_entry *)malloc(sizeof(ir_interrupt_entry)); // We attach a new element to the last element
-		last_entry = last_entry->next;  // And then set the last element to the new element. So last_entry always points to the last element
+        entry = first_entry;
+        while(entry->next)
+        {
+            entry = entry->next;
+        }
+        
+		entry->next = (ir_interrupt_entry *)malloc(sizeof(ir_interrupt_entry)); // We attach a new element to the last element
+        entry = entry->next;
 	}	
 	
 	// Set the interrupt range and the callback
-	last_entry->intr_start = start;
-	last_entry->intr_end = end;
-	last_entry->callback = callback;
-	last_entry->next = NULL; // No next element. This is the last entry!
-	
-	return last_entry;
+	entry->intr_start = start;
+	entry->intr_end = end;
+	entry->callback = callback;
+	entry->next = NULL; // No next element.
+    
+	return entry;
 }
 
 void ir_removeInterrupt(ir_interrupt_entry *entry)
@@ -109,7 +116,7 @@ ir_cpu_state *ir_handleInterrupt(ir_cpu_state *state)
 		while(entry) // Iterate through all known listener
 		{
 			if(state->intr >= entry->intr_start && state->intr <= entry->intr_end) 
-			{
+			{                
 				// The range of the listener matches with the fired interrupt
 				nextState = entry->callback(state->intr, state); // we call the callback and ask for a new CPU state
 				
