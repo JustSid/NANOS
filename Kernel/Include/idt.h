@@ -1,5 +1,5 @@
 //
-//  cmos.c
+//  idt.h
 //  NANOS
 //
 //  Created by Sidney Just
@@ -16,38 +16,23 @@
 //  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#include "cmos.h"
-#include "port.h"
+#ifndef _IDT_H_
+#define _IDT_H_
 
-uint8_t cmos_readData(uint8_t offset)
-{
-	uint8_t temp = inb(0x70);
-	outb(0x70, (temp & 0x80) | (offset & 0x7F));
-	return inb(0x71);
-}
+#include "stdbool.h"
+#include "stdint.h"
 
-void cmos_setData(uint8_t offset, uint8_t data)
-{
-	uint8_t temp = inb(0x70);
-	outb(0x70, (temp & 0x80) | (offset & 0x7F));
-	outb(0x71, data);
-}
+#define IDT_FLAG_INTERRUPT_GATE		0xe
+#define IDT_FLAG_PRESENT			0x80
+#define IDT_FLAG_RING0				0x00
+#define IDT_FLAG_RING3				0x60
 
-void cmos_setRTCFlags(uint8_t flags)
-{
-	cmos_setData(CMOS_REGISTER_STATEB, flags);
-}
+#define IDT_ENTRIES					256
 
-void cmos_appendRTCFlags(uint8_t flags)
-{
-	uint8_t data = cmos_readData(CMOS_REGISTER_STATEB);
-	data |= flags;
-	cmos_setData(CMOS_REGISTER_STATEB, data);
-}
+extern void idt_setEntry(int index, void (*fn)(), unsigned int selector, int flags);
+extern void idt_commitEntries();
 
-void cmos_removeRTCFlags(uint8_t flags)
-{
-	uint8_t data = cmos_readData(CMOS_REGISTER_STATEB);
-	data &= ~flags;
-	cmos_setData(CMOS_REGISTER_STATEB, data);
-}
+extern void idt_picInit();
+extern void idt_defaults(bool commitImmediately);
+
+#endif

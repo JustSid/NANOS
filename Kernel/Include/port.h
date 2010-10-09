@@ -1,5 +1,5 @@
 //
-//  cmos.c
+//  port.h
 //  NANOS
 //
 //  Created by Sidney Just
@@ -16,38 +16,48 @@
 //  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#include "cmos.h"
-#include "port.h"
+#ifndef _PORT_H_
+#define _PORT_H_
 
-uint8_t cmos_readData(uint8_t offset)
+#include "stdint.h"
+
+// Port In
+static inline uint8_t inb(uint16_t port)
 {
-	uint8_t temp = inb(0x70);
-	outb(0x70, (temp & 0x80) | (offset & 0x7F));
-	return inb(0x71);
+	uint8_t result;
+	__asm__ volatile ("inb %1, %0" : "=a" (result) : "Nd" (port));
+	return result;
 }
 
-void cmos_setData(uint8_t offset, uint8_t data)
+static inline uint16_t inw(uint16_t port)
 {
-	uint8_t temp = inb(0x70);
-	outb(0x70, (temp & 0x80) | (offset & 0x7F));
-	outb(0x71, data);
+	uint16_t result;
+	__asm__ volatile ("inw %1, %0" : "=a" (result) : "Nd" (port));
+	return result;
 }
 
-void cmos_setRTCFlags(uint8_t flags)
+static inline uint32_t inl(uint16_t port)
 {
-	cmos_setData(CMOS_REGISTER_STATEB, flags);
+	uint32_t result;
+	__asm__ volatile ("inl %1, %0" : "=a" (result) : "Nd" (port));
+	return result;
 }
 
-void cmos_appendRTCFlags(uint8_t flags)
+
+// Port Out
+static inline void outw(uint16_t port, uint16_t data)
 {
-	uint8_t data = cmos_readData(CMOS_REGISTER_STATEB);
-	data |= flags;
-	cmos_setData(CMOS_REGISTER_STATEB, data);
+	__asm__ volatile ("outw %0, %1" : : "a" (data), "Nd" (port));
 }
 
-void cmos_removeRTCFlags(uint8_t flags)
+static inline void outb(uint16_t port, uint8_t data)
 {
-	uint8_t data = cmos_readData(CMOS_REGISTER_STATEB);
-	data &= ~flags;
-	cmos_setData(CMOS_REGISTER_STATEB, data);
+	__asm__ volatile ("outb %0, %1" : : "a" (data), "Nd" (port));
 }
+
+static inline void outl(uint16_t port, uint32_t data)
+{
+	__asm__ volatile ("outl %0, %1" : : "a"(data), "Nd" (port));
+}
+
+#endif

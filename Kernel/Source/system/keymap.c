@@ -17,19 +17,23 @@
 //
 
 #include "keymap.h"
+#include "memory.h"
+#include "string.h"
+#include "stdint.h"
+#include "console.h"
 
 static km_layout *km_current_layout = NULL;
 
 km_layout *km_createLayout(const char *name)
 {
-	km_layout *temp = (km_layout *)malloc(sizeof(km_layout));
+	km_layout *temp = (km_layout *)mm_alloc(sizeof(km_layout));
 	
 	if(temp)
 	{
-		temp->name = (char *)malloc(strlen(name) * sizeof(char));
+		temp->name = (char *)mm_alloc(strlen(name) * sizeof(char));
 		if(!temp->name)
 		{
-			free(temp);
+			mm_free(temp);
 			return NULL;
 		}
 		
@@ -67,8 +71,8 @@ void km_setLayout(km_layout *layout)
 {
 	if(km_current_layout)
 	{
-		free(km_current_layout->name);
-		free(km_current_layout);
+		mm_free(km_current_layout->name);
+		mm_free(km_current_layout);
 	}
 	
 	km_current_layout = km_copy(layout);

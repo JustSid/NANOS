@@ -1,5 +1,5 @@
 //
-//  cmos.c
+//  panic.c
 //  NANOS
 //
 //  Created by Sidney Just
@@ -16,38 +16,45 @@
 //  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#include "cmos.h"
-#include "port.h"
 
-uint8_t cmos_readData(uint8_t offset)
-{
-	uint8_t temp = inb(0x70);
-	outb(0x70, (temp & 0x80) | (offset & 0x7F));
-	return inb(0x71);
-}
+#include "panic.h"
+#include "interrupt.h"
+#include "console.h"
+#include "string.h"
+#include "stdio.h"
 
-void cmos_setData(uint8_t offset, uint8_t data)
-{
-	uint8_t temp = inb(0x70);
-	outb(0x70, (temp & 0x80) | (offset & 0x7F));
-	outb(0x71, data);
-}
+extern ir_cpuState *ir_lastCPUState();
 
-void cmos_setRTCFlags(uint8_t flags)
+void panic(char *reason, ...)
 {
-	cmos_setData(CMOS_REGISTER_STATEB, flags);
-}
+	va_list param;
+	va_start(param, reason);
+	
+	cn_puts("\n\nKernel panic!\n");
+	cn_puts("Reason: ");
+	
+	char temp[1024];
+	vsprintf(temp, reason, param);
+	cn_puts(temp);
 
-void cmos_appendRTCFlags(uint8_t flags)
-{
-	uint8_t data = cmos_readData(CMOS_REGISTER_STATEB);
-	data |= flags;
-	cmos_setData(CMOS_REGISTER_STATEB, data);
-}
-
-void cmos_removeRTCFlags(uint8_t flags)
-{
-	uint8_t data = cmos_readData(CMOS_REGISTER_STATEB);
-	data &= ~flags;
-	cmos_setData(CMOS_REGISTER_STATEB, data);
+	ir_cpuState *state = ir_lastCPUState();
+	if(state)
+	{
+		cn_printf("\nLast known CPU state:\n");
+		cn_printf("   %%eax: %p\n", state->eax);
+		cn_printf("   %%ebx: %p\n", state->ebx);
+		cn_printf("   %%ecx: %p\n", state->ecx);
+		cn_printf("   %%edx: %p\n", state->edx);
+		cn_printf("   %%esi: %p\n", state->esi);
+		cn_printf("   %%edi: %p\n", state->edi);
+		cn_printf("   %%ebp: %p\n", state->ebp);
+	}
+	else 
+		cn_printf("No known CPU state loadable");
+	
+	cn_puts("Kernel halted");
+	va_end(param);
+	
+	while(1) 
+		asm volatile("cli; hlt"); // Thanks god, its over now
 }

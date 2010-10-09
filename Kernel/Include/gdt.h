@@ -1,5 +1,5 @@
 //
-//  cmos.c
+//  gdt.h
 //  NANOS
 //
 //  Created by Sidney Just
@@ -16,38 +16,31 @@
 //  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#include "cmos.h"
-#include "port.h"
+#ifndef _GDT_H_
+#define _GDT_H_
 
-uint8_t cmos_readData(uint8_t offset)
-{
-	uint8_t temp = inb(0x70);
-	outb(0x70, (temp & 0x80) | (offset & 0x7F));
-	return inb(0x71);
-}
+#include "stdbool.h"
+#include "stdint.h"
 
-void cmos_setData(uint8_t offset, uint8_t data)
-{
-	uint8_t temp = inb(0x70);
-	outb(0x70, (temp & 0x80) | (offset & 0x7F));
-	outb(0x71, data);
-}
+#define GDT_FLAG_DATASEG	0x02
+#define GDT_FLAG_CODESEG	0x0a
+#define GDT_FLAG_TSS		0x09
 
-void cmos_setRTCFlags(uint8_t flags)
-{
-	cmos_setData(CMOS_REGISTER_STATEB, flags);
-}
+#define GDT_FLAG_SEGMENT	0x10
+#define GDT_FLAG_RING0		0x00
+#define GDT_FLAG_RING3		0x60
+#define GDT_FLAG_PRESENT	0x80
 
-void cmos_appendRTCFlags(uint8_t flags)
-{
-	uint8_t data = cmos_readData(CMOS_REGISTER_STATEB);
-	data |= flags;
-	cmos_setData(CMOS_REGISTER_STATEB, data);
-}
+#define GDT_FLAG_4K			0x800
+#define GDT_FLAG_32_BIT		0x400
 
-void cmos_removeRTCFlags(uint8_t flags)
-{
-	uint8_t data = cmos_readData(CMOS_REGISTER_STATEB);
-	data &= ~flags;
-	cmos_setData(CMOS_REGISTER_STATEB, data);
-}
+#define GDT_ENTIRES			6
+
+extern void gdt_setEntry(int index, unsigned int base, unsigned int limit, int flags);
+extern void gdt_commitEntries();
+
+extern void gdt_defaults(bool commitImmediately);
+
+extern void gdt_setTSSEntry(uint32_t entry, int index);
+
+#endif

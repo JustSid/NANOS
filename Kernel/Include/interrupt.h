@@ -1,5 +1,5 @@
 //
-//  cmos.c
+//  interrupt.h
 //  NANOS
 //
 //  Created by Sidney Just
@@ -16,38 +16,39 @@
 //  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#include "cmos.h"
-#include "port.h"
+#ifndef _INTERRUPT_H_
+#define _INTERRUPT_H_
 
-uint8_t cmos_readData(uint8_t offset)
-{
-	uint8_t temp = inb(0x70);
-	outb(0x70, (temp & 0x80) | (offset & 0x7F));
-	return inb(0x71);
-}
+#include "stdint.h"
 
-void cmos_setData(uint8_t offset, uint8_t data)
+typedef struct 
 {
-	uint8_t temp = inb(0x70);
-	outb(0x70, (temp & 0x80) | (offset & 0x7F));
-	outb(0x71, data);
-}
+    uint32_t   eax;
+    uint32_t   ebx;
+    uint32_t   ecx;
+    uint32_t   edx;
+    uint32_t   esi;
+    uint32_t   edi;
+    uint32_t   ebp;
+	
+    uint32_t   intr;
+    uint32_t   error;
+	
+    uint32_t   eip;
+    uint32_t   cs;
+    uint32_t   eflags;
+    uint32_t   esp;
+    uint32_t   ss;
+} ir_cpuState;
 
-void cmos_setRTCFlags(uint8_t flags)
-{
-	cmos_setData(CMOS_REGISTER_STATEB, flags);
-}
+typedef ir_cpuState *(*ir_interruptHandle)(uint32_t interrupt, ir_cpuState *state);
 
-void cmos_appendRTCFlags(uint8_t flags)
-{
-	uint8_t data = cmos_readData(CMOS_REGISTER_STATEB);
-	data |= flags;
-	cmos_setData(CMOS_REGISTER_STATEB, data);
-}
+extern void ir_enableInterrupts();
+extern void ir_disableInterrupts();
 
-void cmos_removeRTCFlags(uint8_t flags)
-{
-	uint8_t data = cmos_readData(CMOS_REGISTER_STATEB);
-	data &= ~flags;
-	cmos_setData(CMOS_REGISTER_STATEB, data);
-}
+extern int ir_installInterruptHandler(ir_interruptHandle interruptHandle, uint32_t handleBegin, uint32_t handleEnd);
+extern ir_cpuState *ir_handleInterrupt(ir_cpuState *state);
+
+extern int ir_init();
+
+#endif

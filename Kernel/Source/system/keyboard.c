@@ -17,13 +17,15 @@
 //
 
 #include "keyboard.h"
+#include "memory.h"
+#include "keymap.h"
 
 static unsigned char	kb_lastCharacter = '\0';
 static kb_callback_map *kb_first_callback = NULL;
 
 kb_callback_map *kb_addKeyboardHook()
 {
-	kb_callback_map *temp = (kb_callback_map *)malloc(sizeof(kb_callback_map));
+	kb_callback_map *temp = (kb_callback_map *)mm_alloc(sizeof(kb_callback_map));
 	
 	if(temp)
 	{
@@ -44,16 +46,40 @@ kb_callback_map *kb_addKeyboardHook()
 		}
 		
 		temp->key_down = NULL;
-		
 		temp->next = NULL;
 	}
 	
 	return temp;
 }
 
-void kb_init()
+void kb_removeKeyboardHook(kb_callback_map *rmap)
 {
+	kb_callback_map *map = kb_first_callback;
+	kb_callback_map *lmap = NULL;
 	
+	while(map)
+	{
+		if(map == rmap)
+		{
+			if(!lmap)
+			{
+				kb_first_callback = map->next;
+				mm_free(map);
+				
+				return;
+			}
+			else 
+			{
+				rmap->next = map->next;
+				mm_free(map);
+				
+				return;
+			}
+		}
+		
+		lmap = map;
+		map = map->next;
+	}
 }
 
 void kb_keyDown(unsigned char key)

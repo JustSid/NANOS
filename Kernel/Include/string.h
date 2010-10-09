@@ -1,5 +1,5 @@
 //
-//  cmos.c
+//  string.h
 //  NANOS
 //
 //  Created by Sidney Just
@@ -16,38 +16,25 @@
 //  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#include "cmos.h"
-#include "port.h"
 
-uint8_t cmos_readData(uint8_t offset)
-{
-	uint8_t temp = inb(0x70);
-	outb(0x70, (temp & 0x80) | (offset & 0x7F));
-	return inb(0x71);
-}
+#ifndef _STRING_H_
+#define _STRING_H_
 
-void cmos_setData(uint8_t offset, uint8_t data)
-{
-	uint8_t temp = inb(0x70);
-	outb(0x70, (temp & 0x80) | (offset & 0x7F));
-	outb(0x71, data);
-}
+#include "stdbool.h"
+#include "stdint.h"
 
-void cmos_setRTCFlags(uint8_t flags)
-{
-	cmos_setData(CMOS_REGISTER_STATEB, flags);
-}
+extern void *memcpy(void *dst0, const void *src0, size_t size);
+extern int   memcmp(const void *src0, const void *src1, size_t size);
+extern void *memset(void *dst0, int val, size_t size);
 
-void cmos_appendRTCFlags(uint8_t flags)
-{
-	uint8_t data = cmos_readData(CMOS_REGISTER_STATEB);
-	data |= flags;
-	cmos_setData(CMOS_REGISTER_STATEB, data);
-}
+extern int strcmp(char *str1, char *str2);
+extern int strncmp(char *str1, char *str2, size_t len);
 
-void cmos_removeRTCFlags(uint8_t flags)
-{
-	uint8_t data = cmos_readData(CMOS_REGISTER_STATEB);
-	data &= ~flags;
-	cmos_setData(CMOS_REGISTER_STATEB, data);
-}
+extern size_t strlen(const char *str);
+
+extern char *strcpy(char *dst, const char *src);
+extern char *strncpy(char *dst, const char *src, size_t len);
+
+extern char *strcat(char *dst, const char *src);
+
+#endif

@@ -6,7 +6,7 @@ mkdir -p "$BASEDIR/image/boot/grub"
 mkdir -p "$BASEDIR/image/nanos"
 
 cp "$BASEDIR/grub.cfg" "$BASEDIR/image/boot/grub"
-cp "$BASEDIR/../Kernel/Source/kernel" "$BASEDIR/image/nanos/kernel"
+cp "$BASEDIR/../Kernel/nanos" "$BASEDIR/image/nanos/nanos"
 
 cd "$BASEDIR/"
 grub-mkrescue --modules="linux ext2 fshelp ls boot pc" --output=NANOS.iso "$BASEDIR/image"

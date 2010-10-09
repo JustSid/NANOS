@@ -1,5 +1,5 @@
 //
-//  cmos.c
+//  console.h
 //  NANOS
 //
 //  Created by Sidney Just
@@ -16,38 +16,24 @@
 //  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#include "cmos.h"
-#include "port.h"
+#ifndef _CONSOLE_H_
+#define _CONSOLE_H_
 
-uint8_t cmos_readData(uint8_t offset)
-{
-	uint8_t temp = inb(0x70);
-	outb(0x70, (temp & 0x80) | (offset & 0x7F));
-	return inb(0x71);
-}
+#include "video.h"
+#include "stdarg.h"
+#include "stdbool.h"
 
-void cmos_setData(uint8_t offset, uint8_t data)
-{
-	uint8_t temp = inb(0x70);
-	outb(0x70, (temp & 0x80) | (offset & 0x7F));
-	outb(0x71, data);
-}
+extern void cn_setTextColor(char color);
 
-void cmos_setRTCFlags(uint8_t flags)
-{
-	cmos_setData(CMOS_REGISTER_STATEB, flags);
-}
+extern void cn_cls();
+extern void cn_putc(char c);
+extern void cn_puts(char *string);
 
-void cmos_appendRTCFlags(uint8_t flags)
-{
-	uint8_t data = cmos_readData(CMOS_REGISTER_STATEB);
-	data |= flags;
-	cmos_setData(CMOS_REGISTER_STATEB, data);
-}
+extern void cn_printf(const char *format, ...);
 
-void cmos_removeRTCFlags(uint8_t flags)
-{
-	uint8_t data = cmos_readData(CMOS_REGISTER_STATEB);
-	data &= ~flags;
-	cmos_setData(CMOS_REGISTER_STATEB, data);
-}
+extern void cn_scrollLine();
+extern void cn_setCursor(bool visible);
+
+#endif
+
+

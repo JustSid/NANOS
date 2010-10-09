@@ -1,5 +1,5 @@
 //
-//  cmos.c
+//  hardware.h
 //  NANOS
 //
 //  Created by Sidney Just
@@ -16,38 +16,44 @@
 //  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#include "cmos.h"
-#include "port.h"
 
-uint8_t cmos_readData(uint8_t offset)
+#include "hardware.h"
+#include "console.h"
+#include "stdint.h"
+#include "string.h"
+#include "memory.h"
+
+static hw_identifier *currentHardware = NULL;
+
+hw_identifier *hw_currentHardware()
 {
-	uint8_t temp = inb(0x70);
-	outb(0x70, (temp & 0x80) | (offset & 0x7F));
-	return inb(0x71);
+	return currentHardware;
 }
 
-void cmos_setData(uint8_t offset, uint8_t data)
+void cpuid(uint32_t selector, uint32_t *data)
 {
-	uint8_t temp = inb(0x70);
-	outb(0x70, (temp & 0x80) | (offset & 0x7F));
-	outb(0x71, data);
+	asm volatile ("pushl %%ebx \n"
+				  "cpuid \n"
+				  "movl %%ebx, %1 \n"
+				  "popl %%ebx \n" : "=a" (data[0]), "=r" (data[1]), "=c" (data[2]), "=d" (data[3]) : "a" (selector) : "cc");
 }
 
-void cmos_setRTCFlags(uint8_t flags)
+int hw_checkHardware()
 {
-	cmos_setData(CMOS_REGISTER_STATEB, flags);
-}
-
-void cmos_appendRTCFlags(uint8_t flags)
-{
-	uint8_t data = cmos_readData(CMOS_REGISTER_STATEB);
-	data |= flags;
-	cmos_setData(CMOS_REGISTER_STATEB, data);
-}
-
-void cmos_removeRTCFlags(uint8_t flags)
-{
-	uint8_t data = cmos_readData(CMOS_REGISTER_STATEB);
-	data &= ~flags;
-	cmos_setData(CMOS_REGISTER_STATEB, data);
+	cn_printf("Initializing hardware...");
+	
+	currentHardware = (hw_identifier *)mm_alloc(sizeof(hw_identifier));
+	if(!currentHardware)
+		return 0;
+	
+	uint32_t reg[4];
+	cpuid(0, reg);
+	
+	currentHardware->cpuVendor = processorVendorUnknown;	
+	currentHardware->sse2	= false;
+	currentHardware->sse3	= false;
+	currentHardware->mmx	= false;
+	
+	cn_printf("ok\n");
+	return 1;
 }

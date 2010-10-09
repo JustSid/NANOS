@@ -3,7 +3,7 @@
 //  NANOS
 //
 //  Created by Sidney Just
-//  Copyright © 2010 by Sidney Just
+//  Copyright (c) 2010 by Sidney Just
 //  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated 
 //  documentation files (the "Software"), to deal in the Software without restriction, including without limitation 
 //  the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, 
@@ -17,6 +17,7 @@
 //
 
 #include "idt.h"
+#include "port.h"
 
 static long long unsigned int idt_table[IDT_ENTRIES];
 
@@ -70,7 +71,6 @@ void idt_picInit()
 }
 
 
-
 extern void idt_stub_0();
 extern void idt_stub_1();
 extern void idt_stub_2();
@@ -117,7 +117,7 @@ void idt_defaults(bool commitImmediately)
     idt_setEntry(0,  idt_stub_0,  0x8, IDT_FLAG_INTERRUPT_GATE | IDT_FLAG_RING0 | IDT_FLAG_PRESENT);
     idt_setEntry(1,  idt_stub_1,  0x8, IDT_FLAG_INTERRUPT_GATE | IDT_FLAG_RING0 | IDT_FLAG_PRESENT);
     idt_setEntry(2,  idt_stub_2,  0x8, IDT_FLAG_INTERRUPT_GATE | IDT_FLAG_RING0 | IDT_FLAG_PRESENT);
-    idt_setEntry(3,  idt_stub_3,  0x8, IDT_FLAG_INTERRUPT_GATE | IDT_FLAG_RING0 | IDT_FLAG_PRESENT);
+    idt_setEntry(3,  idt_stub_3,  0x8, IDT_FLAG_INTERRUPT_GATE | IDT_FLAG_RING3 | IDT_FLAG_PRESENT);
     idt_setEntry(4,  idt_stub_4,  0x8, IDT_FLAG_INTERRUPT_GATE | IDT_FLAG_RING0 | IDT_FLAG_PRESENT);
     idt_setEntry(5,  idt_stub_5,  0x8, IDT_FLAG_INTERRUPT_GATE | IDT_FLAG_RING0 | IDT_FLAG_PRESENT);
     idt_setEntry(6,  idt_stub_6,  0x8, IDT_FLAG_INTERRUPT_GATE | IDT_FLAG_RING0 | IDT_FLAG_PRESENT);

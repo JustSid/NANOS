@@ -1,5 +1,5 @@
 //
-//  cmos.c
+//  scheduler.h
 //  NANOS
 //
 //  Created by Sidney Just
@@ -16,38 +16,64 @@
 //  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#include "cmos.h"
-#include "port.h"
 
-uint8_t cmos_readData(uint8_t offset)
-{
-	uint8_t temp = inb(0x70);
-	outb(0x70, (temp & 0x80) | (offset & 0x7F));
-	return inb(0x71);
-}
+#ifndef _SCHEDULER_H_
+#define _SCHEDULER_H_
 
-void cmos_setData(uint8_t offset, uint8_t data)
-{
-	uint8_t temp = inb(0x70);
-	outb(0x70, (temp & 0x80) | (offset & 0x7F));
-	outb(0x71, data);
-}
+#include "stdint.h"
+#include "stdbool.h"
+#include "interrupt.h"
 
-void cmos_setRTCFlags(uint8_t flags)
+typedef struct sd_thread
 {
-	cmos_setData(CMOS_REGISTER_STATEB, flags);
-}
+	int8_t		priority;
+	uint8_t		*stack;
+	
+	uint8_t		timeLeft;
+	uint8_t		timeMax;
+	uint16_t	timeSleep;
+	
+	uint8_t		id;
+	
+	ir_cpuState *state;
+	void		(*entry)();
+	
+	bool died;
+	
+	struct sd_thread *next;
+} sd_thread;
 
-void cmos_appendRTCFlags(uint8_t flags)
+typedef struct sd_task
 {
-	uint8_t data = cmos_readData(CMOS_REGISTER_STATEB);
-	data |= flags;
-	cmos_setData(CMOS_REGISTER_STATEB, data);
-}
+	uint32_t	pid;
+	uint32_t	parent;
+	
+	sd_thread		*main_thread;
+	sd_thread		*current_thread;
+	
+	char *name;
+	bool died;
+	struct sd_task *next;
+} sd_task;
 
-void cmos_removeRTCFlags(uint8_t flags)
-{
-	uint8_t data = cmos_readData(CMOS_REGISTER_STATEB);
-	data &= ~flags;
-	cmos_setData(CMOS_REGISTER_STATEB, data);
-}
+#define SD_PID_INVALID UINT32_MAX
+#define SD_TID_INVALID UINT32_MAX
+
+extern uint32_t sd_spawnTask(void *entry);
+extern int sd_init();
+
+extern void sd_nameTask(char *name);
+extern uint32_t sd_attachThread(void *entry);
+extern int  sd_threadRunning(uint32_t threadId);
+
+extern sd_task *sd_taskWithPid(uint32_t pid);
+extern ir_cpuState *sd_kill(uint32_t pid);
+extern uint32_t sys_getpid();
+extern uint32_t sys_getppid();
+
+extern void sd_printTasks();
+
+extern void sd_enableScheduler();
+extern void sd_disableScheduler();
+
+#endif

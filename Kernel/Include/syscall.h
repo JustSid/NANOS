@@ -1,5 +1,5 @@
 //
-//  cmos.c
+//  syscall.h
 //  NANOS
 //
 //  Created by Sidney Just
@@ -16,38 +16,27 @@
 //  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#include "cmos.h"
-#include "port.h"
+#ifndef _SYSCALL_H_
+#define _SYSCALL_H_
 
-uint8_t cmos_readData(uint8_t offset)
-{
-	uint8_t temp = inb(0x70);
-	outb(0x70, (temp & 0x80) | (offset & 0x7F));
-	return inb(0x71);
-}
+#include "stdint.h"
 
-void cmos_setData(uint8_t offset, uint8_t data)
+typedef enum
 {
-	uint8_t temp = inb(0x70);
-	outb(0x70, (temp & 0x80) | (offset & 0x7F));
-	outb(0x71, data);
-}
+	sys_sleep,
+	sys_exit
+} syscall_types;
 
-void cmos_setRTCFlags(uint8_t flags)
+typedef struct
 {
-	cmos_setData(CMOS_REGISTER_STATEB, flags);
-}
+	int64_t		argv[8];
+	uint8_t		argc;
+	int64_t		retVal;
+} syscall_args;
 
-void cmos_appendRTCFlags(uint8_t flags)
-{
-	uint8_t data = cmos_readData(CMOS_REGISTER_STATEB);
-	data |= flags;
-	cmos_setData(CMOS_REGISTER_STATEB, data);
-}
+#define SYS_NULL -421337
 
-void cmos_removeRTCFlags(uint8_t flags)
-{
-	uint8_t data = cmos_readData(CMOS_REGISTER_STATEB);
-	data &= ~flags;
-	cmos_setData(CMOS_REGISTER_STATEB, data);
-}
+extern int64_t syscall(syscall_types type, ...);
+extern int sc_init();
+
+#endif

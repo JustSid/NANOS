@@ -1,5 +1,5 @@
 //
-//  cmos.c
+//  debug.c
 //  NANOS
 //
 //  Created by Sidney Just
@@ -16,38 +16,43 @@
 //  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#include "cmos.h"
-#include "port.h"
+#include "debug.h"
 
-uint8_t cmos_readData(uint8_t offset)
+#include "string.h"
+#include "memory.h"
+#include "syscall.h"
+
+static db_debugInfo *debugInfo = NULL;
+
+void db_breakpointLong(char *file, int line)
 {
-	uint8_t temp = inb(0x70);
-	outb(0x70, (temp & 0x80) | (offset & 0x7F));
-	return inb(0x71);
+	if(debugInfo)
+	{
+		mm_free(debugInfo);
+	}
+	
+	debugInfo = mm_alloc(sizeof(db_debugInfo));
+	if(debugInfo)
+	{
+		strcpy(debugInfo->file, file);
+		debugInfo->line = line;
+	}
+	
+	asm volatile("int $3");
 }
 
-void cmos_setData(uint8_t offset, uint8_t data)
+
+
+db_debugInfo *db_getInfo()
 {
-	uint8_t temp = inb(0x70);
-	outb(0x70, (temp & 0x80) | (offset & 0x7F));
-	outb(0x71, data);
+	return debugInfo;
 }
 
-void cmos_setRTCFlags(uint8_t flags)
+void db_clearInfo()
 {
-	cmos_setData(CMOS_REGISTER_STATEB, flags);
-}
-
-void cmos_appendRTCFlags(uint8_t flags)
-{
-	uint8_t data = cmos_readData(CMOS_REGISTER_STATEB);
-	data |= flags;
-	cmos_setData(CMOS_REGISTER_STATEB, data);
-}
-
-void cmos_removeRTCFlags(uint8_t flags)
-{
-	uint8_t data = cmos_readData(CMOS_REGISTER_STATEB);
-	data &= ~flags;
-	cmos_setData(CMOS_REGISTER_STATEB, data);
+	if(debugInfo)
+	{
+		mm_free(debugInfo);
+		debugInfo = NULL;
+	}
 }

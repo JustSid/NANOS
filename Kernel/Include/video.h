@@ -1,5 +1,5 @@
 //
-//  cmos.c
+//  video.h
 //  NANOS
 //
 //  Created by Sidney Just
@@ -16,38 +16,42 @@
 //  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#include "cmos.h"
-#include "port.h"
+#ifndef _VIDEO_H_
+#define _VIDEO_H_
 
-uint8_t cmos_readData(uint8_t offset)
-{
-	uint8_t temp = inb(0x70);
-	outb(0x70, (temp & 0x80) | (offset & 0x7F));
-	return inb(0x71);
-}
+/* The default video size, 80x25 characters */
+#define VD_SIZE_X 80
+#define VD_SIZE_Y 25
 
-void cmos_setData(uint8_t offset, uint8_t data)
-{
-	uint8_t temp = inb(0x70);
-	outb(0x70, (temp & 0x80) | (offset & 0x7F));
-	outb(0x71, data);
-}
+/* The default video colors */
+#define VD_COLOR_BLACK		0x0
+#define VD_COLOR_BLUE		0x1
+#define VD_COLOR_GREEN		0x2
+#define VD_COLOR_CYAN		0x3
+#define VD_COLOR_RED		0x4
+#define VD_COLOR_MAGENTA	0x5
+#define VD_COLOR_BROWN		0x6
+#define VD_COLOR_LGRAY		0x7
+#define VD_COLOR_DGRAY		0x8
+#define VD_COLOR_LBLUE		0x9
+#define VD_COLOR_LGREEN		0xA
+#define VD_COLOR_LCYAN		0xB
+#define VD_COLOR_LRED		0xC
+#define VD_COLOR_LMAGENTA	0xD
+#define VD_COLOR_YELLOW		0xE
+#define VD_COLOR_WHITE		0xF
 
-void cmos_setRTCFlags(uint8_t flags)
-{
-	cmos_setData(CMOS_REGISTER_STATEB, flags);
-}
+/**
+ * Clears the complete screen
+ **/
+extern void vd_cls();
 
-void cmos_appendRTCFlags(uint8_t flags)
-{
-	uint8_t data = cmos_readData(CMOS_REGISTER_STATEB);
-	data |= flags;
-	cmos_setData(CMOS_REGISTER_STATEB, data);
-}
+extern void vd_setChar(int x, int y, char c);
+extern void vd_setAttribute(int x, int y, char a);
 
-void cmos_removeRTCFlags(uint8_t flags)
-{
-	uint8_t data = cmos_readData(CMOS_REGISTER_STATEB);
-	data &= ~flags;
-	cmos_setData(CMOS_REGISTER_STATEB, data);
-}
+extern void vd_scrollLine();
+
+extern void vd_writeString(int startX, int startY, char *string, char color);
+extern void vd_setCursor(int x, int y);
+
+#endif

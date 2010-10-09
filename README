@@ -8,10 +8,9 @@ Currently implemented:
 - Memory manager
 - Interrupt manager
 - Multitasking
-- Some parts of the default C library
+- A simple shell
 
 Todo:
 - Drivers (ATA, USB etc)
 - Filesystem (Fat32?)
-- A shell
 - More things (there is no "finished" state, as long as I have fun working on this project, I will implement new things).

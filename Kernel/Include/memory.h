@@ -1,5 +1,5 @@
 //
-//  cmos.c
+//  memory.h
 //  NANOS
 //
 //  Created by Sidney Just
@@ -16,38 +16,28 @@
 //  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#include "cmos.h"
-#include "port.h"
+#ifndef _MEMORY_H_
+#define _MEMORY_H_
 
-uint8_t cmos_readData(uint8_t offset)
-{
-	uint8_t temp = inb(0x70);
-	outb(0x70, (temp & 0x80) | (offset & 0x7F));
-	return inb(0x71);
-}
+#include "multiboot.h"
+#include "stdint.h"
 
-void cmos_setData(uint8_t offset, uint8_t data)
-{
-	uint8_t temp = inb(0x70);
-	outb(0x70, (temp & 0x80) | (offset & 0x7F));
-	outb(0x71, data);
-}
+#define MM_FRAGMENT_FREE	1
+#define MM_FRAGMENT_USED	2
+#define MM_FRAGMENT_WIRED	4
 
-void cmos_setRTCFlags(uint8_t flags)
-{
-	cmos_setData(CMOS_REGISTER_STATEB, flags);
-}
+/**
+ * Initializes the physical memory manager using the informations from the multiboot info.
+ @return The number of free memory chunks. An value of zero indicates an error.
+ **/
+extern size_t mm_init(struct multiboot_info *bootinfo);
 
-void cmos_appendRTCFlags(uint8_t flags)
-{
-	uint8_t data = cmos_readData(CMOS_REGISTER_STATEB);
-	data |= flags;
-	cmos_setData(CMOS_REGISTER_STATEB, data);
-}
+extern void mm_dumpMemory();
 
-void cmos_removeRTCFlags(uint8_t flags)
-{
-	uint8_t data = cmos_readData(CMOS_REGISTER_STATEB);
-	data &= ~flags;
-	cmos_setData(CMOS_REGISTER_STATEB, data);
-}
+extern void *mm_alloc(size_t size);
+extern void mm_free(void *ptr);
+extern void mm_cfree(void *ptr);
+
+extern void mm_defrag();
+
+#endif

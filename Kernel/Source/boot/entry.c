@@ -1,5 +1,5 @@
 //
-//  syscall.c
+//  entry.c
 //  NANOS
 //
 //  Created by Sidney Just
@@ -16,54 +16,56 @@
 //  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+#include "multiboot.h"
 
-#include "syscall.h"
 #include "memory.h"
-#include "panic.h"
-#include "stdint.h"
 #include "interrupt.h"
+#include "syscall.h"
+#include "scheduler.h"
+#include "hardware.h"
+
 #include "console.h"
+#include "panic.h"
+#include "debug.h"
 
-extern ir_cpuState *td_schedule(uint32_t intr, ir_cpuState *state);
-extern ir_cpuState *td_kill(uint32_t pid);
+#include "time.h"
+#include "keymap_def.h"
+#include "ps2.h"
 
-ir_cpuState *syscallEx(uint32_t interrupt, ir_cpuState *state)
-{	
-	syscall_types type = state->eax;
-	switch(type)
-	{
-		case sys_sleep:
-		{
-			
-		}
-			
-		case sys_exit:
-		{
-			
-		}
-					
-		default:
-			break;
-	}
-	
-	return state;
-}
+#define VersionMajor 0
+#define VersionMinor 1
+#define VersionPatch 3
+#define VersionCreate(major, minor, patch) (((major) << 16) | ((minor) << 8) | (patch))
 
-
-int64_t syscall(syscall_types type, ...)
+// High-Level boot entry
+void boot(struct multiboot_info *bootinfo)
 {
-	asm volatile ("int $0x30" : : "a" (type));
-	return 0;
-}
-
-
-int sc_init()
-{
-	cn_printf("Initializing system...");
+	cn_cls();
+	cn_printf("NANOS build from %s %s. Version: %i.%i.%i:%i\n", __DATE__, __TIME__, VersionMajor, VersionMinor, VersionPatch, VersionCreate(VersionMajor, VersionMinor, VersionPatch));
+	cn_printf("Here be dragons!\n\n");
 	
-	if(ir_installInterruptHandler(syscallEx, 0x30, 0x30) != 1)
-		return 0;
+	ir_disableInterrupts();
 	
-	cn_printf("ok\n");
-	return 1;
+	if(mm_init(bootinfo) == 0)
+		panic("Error while initializing the memory manager!");
+	
+	if(ir_init() == 0)
+		panic("Error while initializing the interrupt handler!");
+	
+	if(hw_checkHardware() == 0)
+		panic("Error while checking hardware!");
+	
+	if(sc_init() == 0)
+		panic("Errow while initializing the system!");
+	
+	if(sd_init() == 0)
+		panic("Error while initializing the scheduler!");
+	
+	ps_init();
+	km_init();
+	
+	cn_printf("\n\n");
+	ir_enableInterrupts();
+	
+	while(1) {asm volatile ("hlt");}
 }

@@ -1,9 +1,9 @@
 //
-//  cmos.c
+//  keymap.h
 //  NANOS
 //
-//  Created by Sidney Just
-//  Copyright (c) 2010 by Sidney Just
+//  Created by Muffel
+//  Copyright © 2010 by Muffel
 //  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated 
 //  documentation files (the "Software"), to deal in the Software without restriction, including without limitation 
 //  the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, 
@@ -16,38 +16,21 @@
 //  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#include "cmos.h"
-#include "port.h"
+#ifndef _KEYMAP_H_
+#define _KEYMAP_H_
 
-uint8_t cmos_readData(uint8_t offset)
+typedef struct
 {
-	uint8_t temp = inb(0x70);
-	outb(0x70, (temp & 0x80) | (offset & 0x7F));
-	return inb(0x71);
-}
+	unsigned char layout_noCaps[128];
+	unsigned char layout_caps[128];
+	
+	char *name;
+} km_layout;
 
-void cmos_setData(uint8_t offset, uint8_t data)
-{
-	uint8_t temp = inb(0x70);
-	outb(0x70, (temp & 0x80) | (offset & 0x7F));
-	outb(0x71, data);
-}
+extern km_layout *km_createLayout(const char *name);
+extern km_layout *km_copy(km_layout *layout);
 
-void cmos_setRTCFlags(uint8_t flags)
-{
-	cmos_setData(CMOS_REGISTER_STATEB, flags);
-}
+extern void km_setLayout(km_layout *layout);
+extern km_layout *km_currentLayout();
 
-void cmos_appendRTCFlags(uint8_t flags)
-{
-	uint8_t data = cmos_readData(CMOS_REGISTER_STATEB);
-	data |= flags;
-	cmos_setData(CMOS_REGISTER_STATEB, data);
-}
-
-void cmos_removeRTCFlags(uint8_t flags)
-{
-	uint8_t data = cmos_readData(CMOS_REGISTER_STATEB);
-	data &= ~flags;
-	cmos_setData(CMOS_REGISTER_STATEB, data);
-}
+#endif

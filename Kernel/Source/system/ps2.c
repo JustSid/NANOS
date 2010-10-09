@@ -18,6 +18,8 @@
 
 #include "ps2.h"
 #include "keymap.h"
+#include "stdbool.h"
+#include "console.h"
 
 static bool		ps_escaped = false;
 static uint8_t	ps_keyModifier = 0;
@@ -49,11 +51,10 @@ void ps_scanKey(unsigned char scanned)
 	}
 }
 
-ir_cpu_state *ps_ir_callback(uint32_t interrupt, ir_cpu_state *state)
+ir_cpuState *ps_ir_callback(uint32_t interrupt, ir_cpuState *state)
 {
 	unsigned char scancode = inb(0x60);
-    cn_printf("Scancode: %i\n", scancode);
-    
+	
 	if(scancode == 0xe0)
 	{
 		ps_escaped = true;
@@ -119,7 +120,7 @@ ir_cpu_state *ps_ir_callback(uint32_t interrupt, ir_cpu_state *state)
 void ps_init()
 {
 	cn_puts("Initializing PS/2 controller...");
-    ir_addInterrupt(0x21, 0x21, ps_ir_callback);
+	ir_installInterruptHandler(ps_ir_callback, 0x21, 0x21);
     
 	while((inb(0x64) & 2) != 0) {}
 	outb(0x64, 0xf0);
@@ -127,5 +128,5 @@ void ps_init()
 	while((inb(0x64) & 2) != 0) {}
 	outb(0x60 , 0x02);
 	
-	cn_puts("[ok]\n");
+	cn_puts("ok\n");
 }

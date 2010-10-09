@@ -1,5 +1,5 @@
 //
-//  cmos.c
+//  multiboot.h
 //  NANOS
 //
 //  Created by Sidney Just
@@ -16,38 +16,39 @@
 //  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#include "cmos.h"
-#include "port.h"
+#ifndef _MULTIBOOT_H_
+#define _MULTIBOOT_H_
 
-uint8_t cmos_readData(uint8_t offset)
-{
-	uint8_t temp = inb(0x70);
-	outb(0x70, (temp & 0x80) | (offset & 0x7F));
-	return inb(0x71);
-}
+#include "stdint.h"
 
-void cmos_setData(uint8_t offset, uint8_t data)
+struct multiboot_info 
 {
-	uint8_t temp = inb(0x70);
-	outb(0x70, (temp & 0x80) | (offset & 0x7F));
-	outb(0x71, data);
-}
+    uint32_t    mbs_flags;
+    uint32_t    mbs_mem_lower;
+    uint32_t    mbs_mem_upper;
+    uint32_t    mbs_bootdevice;
+    uint32_t    mbs_cmdline;
+    uint32_t    mbs_mods_count;
+    void		*mbs_mods_addr;
+    uint32_t    mbs_syms[4];
+    uint32_t    mbs_mmap_length;
+    void		*mbs_mmap_addr;
+} __attribute__((packed));
 
-void cmos_setRTCFlags(uint8_t flags)
+struct multiboot_mmap 
 {
-	cmos_setData(CMOS_REGISTER_STATEB, flags);
-}
+    uint32_t    entry_size;
+    uint64_t    base;
+    uint64_t    length;
+    uint32_t    type;
+} __attribute__((packed));
 
-void cmos_appendRTCFlags(uint8_t flags)
+struct multiboot_moduleb
 {
-	uint8_t data = cmos_readData(CMOS_REGISTER_STATEB);
-	data |= flags;
-	cmos_setData(CMOS_REGISTER_STATEB, data);
-}
+	void		*mod_start;
+	void		*mod_end;
+	void		*mod_name;
+	uint32_t	reserved;
+} __attribute__((packed));
 
-void cmos_removeRTCFlags(uint8_t flags)
-{
-	uint8_t data = cmos_readData(CMOS_REGISTER_STATEB);
-	data &= ~flags;
-	cmos_setData(CMOS_REGISTER_STATEB, data);
-}
+#endif
