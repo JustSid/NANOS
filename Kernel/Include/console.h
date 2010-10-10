@@ -34,6 +34,8 @@ extern void cn_printf(const char *format, ...);
 extern void cn_scrollLine();
 extern void cn_setCursor(bool visible);
 
+extern void cn_delchar();
+
 #endif
 
 

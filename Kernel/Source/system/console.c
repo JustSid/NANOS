@@ -58,7 +58,8 @@ void cn_setCursor(bool visible)
 void cn_scrollLine()
 {
 	vd_scrollLine();
-	cn_screenPos_y -= 1;
+	
+	cn_screenPos_y --;
 	cn_screenPos_x = 0;
 }
 
@@ -108,4 +109,21 @@ void cn_printf(const char *format, ...)
 	
 	cn_puts(temp);
 	va_end(param);
+}
+
+void cn_delchar()
+{
+	cn_screenPos_x --;
+	
+	if(cn_screenPos_x < 0)
+	{
+		cn_screenPos_x = 0;
+		cn_screenPos_y --;
+		
+		if(cn_screenPos_y < 0)
+			cn_screenPos_y = 0;
+	}
+	
+	vd_setChar(cn_screenPos_x, cn_screenPos_y, ' ');
+	vd_setAttribute(cn_screenPos_x, cn_screenPos_y, cn_textColor);
 }

@@ -31,6 +31,18 @@ static char sh_input[255];
 
 void keydown(unsigned char input)
 {
+	if(input == '\b')
+	{
+		if(sh_index > 0)
+		{
+			cn_delchar();
+			
+			sh_index --;			
+			sh_input[sh_index] = '\0';
+		}
+		return;
+	}
+	
 	cn_putc(input);
 	sh_lastKey = (char)input;
 	

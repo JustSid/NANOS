@@ -31,8 +31,9 @@
 static sd_task *sd_firstTask	= NULL;
 static sd_task *sd_currentTask	= NULL;
 static bool		sd_threadDied	= false;
+static bool		sd_enabled		= true;
 
-static bool sd_enabled = true;
+static ir_cpuState *kernelState = NULL;
 
 void sd_threadEntry();
 
@@ -321,6 +322,13 @@ void sd_cleanUp()
 
 ir_cpuState *sd_step(uint32_t intr, ir_cpuState *state)
 {
+	static bool firstStep = false;
+	if(!firstStep)
+	{
+		memcpy(kernelState, state, sizeof(ir_cpuState));
+		firstStep = true;
+	}
+	
 	if(!sd_enabled)
 		return state;
 	
@@ -353,9 +361,6 @@ ir_cpuState *sd_step(uint32_t intr, ir_cpuState *state)
 				{
 					sd_currentTask->current_thread = sd_currentTask->main_thread;
 					sd_currentTask = sd_currentTask->next;
-					
-					if(!sd_currentTask)
-						sd_currentTask = sd_firstTask;
 				}
 
 			}
@@ -517,6 +522,10 @@ extern void kernelTask();
 int sd_init()
 {
 	cn_printf("Initializing scheduler...");
+	kernelState = mm_alloc(sizeof(ir_cpuState));
+	
+	if(!kernelState)
+		return 0;
 	
 	if(sd_spawnTask(kernelTask) == SD_PID_INVALID || !ir_installInterruptHandler(sd_step, 0x28, 0x28))
 		return 0;

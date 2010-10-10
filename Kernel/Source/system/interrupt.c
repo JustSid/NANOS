@@ -122,7 +122,7 @@ ir_cpuState *ir_handleInterrupt(ir_cpuState *state)
 		return returnState;
 	
 	char panicReason[256];
-	sprintf(panicReason, "Unhandled interrupt %x occured!", (unsigned int)state->intr);
+	sprintf(panicReason, "Unhandled interrupt %i occured!", (unsigned int)state->intr);
 	panic(panicReason);
 	
 	return state;

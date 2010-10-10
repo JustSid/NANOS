@@ -1,7 +1,6 @@
 BASEDIR=`dirname $0`
 
-cd "$BASEDIR/Kernel/Source/"
-sudo make
+"$BASEDIR/build.sh"
 
 cd "$BASEDIR/Build/"
 ./createImage.sh
