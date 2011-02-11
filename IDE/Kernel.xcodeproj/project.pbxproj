@@ -1,0 +1,494 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		E96E1AD312DCB36000BA3E9D /* boot.S in Sources */ = {isa = PBXBuildFile; fileRef = E96E1AB512DCB36000BA3E9D /* boot.S */; };
+		E96E1AD412DCB36000BA3E9D /* entry.c in Sources */ = {isa = PBXBuildFile; fileRef = E96E1AB612DCB36000BA3E9D /* entry.c */; };
+		E96E1AD512DCB36000BA3E9D /* kernelTask.c in Sources */ = {isa = PBXBuildFile; fileRef = E96E1AB812DCB36000BA3E9D /* kernelTask.c */; };
+		E96E1AD612DCB36000BA3E9D /* scheduler.c in Sources */ = {isa = PBXBuildFile; fileRef = E96E1AB912DCB36000BA3E9D /* scheduler.c */; };
+		E96E1AD712DCB36000BA3E9D /* shell.c in Sources */ = {isa = PBXBuildFile; fileRef = E96E1ABB12DCB36000BA3E9D /* shell.c */; };
+		E96E1AD812DCB36000BA3E9D /* cmos.c in Sources */ = {isa = PBXBuildFile; fileRef = E96E1ABD12DCB36000BA3E9D /* cmos.c */; };
+		E96E1AD912DCB36000BA3E9D /* console.c in Sources */ = {isa = PBXBuildFile; fileRef = E96E1ABE12DCB36000BA3E9D /* console.c */; };
+		E96E1ADA12DCB36000BA3E9D /* debug.c in Sources */ = {isa = PBXBuildFile; fileRef = E96E1ABF12DCB36000BA3E9D /* debug.c */; };
+		E96E1ADB12DCB36000BA3E9D /* gdt.c in Sources */ = {isa = PBXBuildFile; fileRef = E96E1AC012DCB36000BA3E9D /* gdt.c */; };
+		E96E1ADC12DCB36000BA3E9D /* idt.c in Sources */ = {isa = PBXBuildFile; fileRef = E96E1AC112DCB36000BA3E9D /* idt.c */; };
+		E96E1ADD12DCB36000BA3E9D /* interrupt.c in Sources */ = {isa = PBXBuildFile; fileRef = E96E1AC212DCB36000BA3E9D /* interrupt.c */; };
+		E96E1ADF12DCB36000BA3E9D /* interrupts.S in Sources */ = {isa = PBXBuildFile; fileRef = E96E1AC412DCB36000BA3E9D /* interrupts.S */; };
+		E96E1AE012DCB36000BA3E9D /* keyboard.c in Sources */ = {isa = PBXBuildFile; fileRef = E96E1AC512DCB36000BA3E9D /* keyboard.c */; };
+		E96E1AE112DCB36000BA3E9D /* keymap.c in Sources */ = {isa = PBXBuildFile; fileRef = E96E1AC612DCB36000BA3E9D /* keymap.c */; };
+		E96E1AE212DCB36000BA3E9D /* keymap_def.c in Sources */ = {isa = PBXBuildFile; fileRef = E96E1AC712DCB36000BA3E9D /* keymap_def.c */; };
+		E96E1AE312DCB36000BA3E9D /* memory.c in Sources */ = {isa = PBXBuildFile; fileRef = E96E1AC812DCB36000BA3E9D /* memory.c */; };
+		E96E1AE412DCB36000BA3E9D /* message.c in Sources */ = {isa = PBXBuildFile; fileRef = E96E1AC912DCB36000BA3E9D /* message.c */; };
+		E96E1AE512DCB36000BA3E9D /* panic.c in Sources */ = {isa = PBXBuildFile; fileRef = E96E1ACA12DCB36000BA3E9D /* panic.c */; };
+		E96E1AE612DCB36000BA3E9D /* ps2.c in Sources */ = {isa = PBXBuildFile; fileRef = E96E1ACB12DCB36000BA3E9D /* ps2.c */; };
+		E96E1AE712DCB36000BA3E9D /* stdio.c in Sources */ = {isa = PBXBuildFile; fileRef = E96E1ACC12DCB36000BA3E9D /* stdio.c */; };
+		E96E1AE812DCB36000BA3E9D /* string.c in Sources */ = {isa = PBXBuildFile; fileRef = E96E1ACD12DCB36000BA3E9D /* string.c */; };
+		E96E1AE912DCB36000BA3E9D /* syscall.c in Sources */ = {isa = PBXBuildFile; fileRef = E96E1ACE12DCB36000BA3E9D /* syscall.c */; };
+		E96E1AEA12DCB36000BA3E9D /* system.c in Sources */ = {isa = PBXBuildFile; fileRef = E96E1ACF12DCB36000BA3E9D /* system.c */; };
+		E96E1AEB12DCB36000BA3E9D /* video.c in Sources */ = {isa = PBXBuildFile; fileRef = E96E1AD112DCB36000BA3E9D /* video.c */; };
+		E9D4A9B7127C26B8004A85C1 /* cmos.h in Headers */ = {isa = PBXBuildFile; fileRef = E9D4A97C127C26B8004A85C1 /* cmos.h */; };
+		E9D4A9B8127C26B8004A85C1 /* console.h in Headers */ = {isa = PBXBuildFile; fileRef = E9D4A97D127C26B8004A85C1 /* console.h */; };
+		E9D4A9B9127C26B8004A85C1 /* debug.h in Headers */ = {isa = PBXBuildFile; fileRef = E9D4A97E127C26B8004A85C1 /* debug.h */; };
+		E9D4A9BA127C26B8004A85C1 /* gdt.h in Headers */ = {isa = PBXBuildFile; fileRef = E9D4A97F127C26B8004A85C1 /* gdt.h */; };
+		E9D4A9BC127C26B8004A85C1 /* idt.h in Headers */ = {isa = PBXBuildFile; fileRef = E9D4A981127C26B8004A85C1 /* idt.h */; };
+		E9D4A9BD127C26B8004A85C1 /* interrupt.h in Headers */ = {isa = PBXBuildFile; fileRef = E9D4A982127C26B8004A85C1 /* interrupt.h */; };
+		E9D4A9BE127C26B8004A85C1 /* keyboard.h in Headers */ = {isa = PBXBuildFile; fileRef = E9D4A983127C26B8004A85C1 /* keyboard.h */; };
+		E9D4A9BF127C26B8004A85C1 /* keymap.h in Headers */ = {isa = PBXBuildFile; fileRef = E9D4A984127C26B8004A85C1 /* keymap.h */; };
+		E9D4A9C0127C26B8004A85C1 /* keymap_def.h in Headers */ = {isa = PBXBuildFile; fileRef = E9D4A985127C26B8004A85C1 /* keymap_def.h */; };
+		E9D4A9C1127C26B8004A85C1 /* memory.h in Headers */ = {isa = PBXBuildFile; fileRef = E9D4A986127C26B8004A85C1 /* memory.h */; };
+		E9D4A9C2127C26B8004A85C1 /* message.h in Headers */ = {isa = PBXBuildFile; fileRef = E9D4A987127C26B8004A85C1 /* message.h */; };
+		E9D4A9C3127C26B8004A85C1 /* multiboot.h in Headers */ = {isa = PBXBuildFile; fileRef = E9D4A988127C26B8004A85C1 /* multiboot.h */; };
+		E9D4A9C4127C26B9004A85C1 /* panic.h in Headers */ = {isa = PBXBuildFile; fileRef = E9D4A989127C26B8004A85C1 /* panic.h */; };
+		E9D4A9C5127C26B9004A85C1 /* port.h in Headers */ = {isa = PBXBuildFile; fileRef = E9D4A98A127C26B8004A85C1 /* port.h */; };
+		E9D4A9C6127C26B9004A85C1 /* ps2.h in Headers */ = {isa = PBXBuildFile; fileRef = E9D4A98B127C26B8004A85C1 /* ps2.h */; };
+		E9D4A9C7127C26B9004A85C1 /* scheduler.h in Headers */ = {isa = PBXBuildFile; fileRef = E9D4A98C127C26B8004A85C1 /* scheduler.h */; };
+		E9D4A9C8127C26B9004A85C1 /* stdbool.h in Headers */ = {isa = PBXBuildFile; fileRef = E9D4A98D127C26B8004A85C1 /* stdbool.h */; };
+		E9D4A9C9127C26B9004A85C1 /* stdint.h in Headers */ = {isa = PBXBuildFile; fileRef = E9D4A98E127C26B8004A85C1 /* stdint.h */; };
+		E9D4A9CA127C26B9004A85C1 /* stdio.h in Headers */ = {isa = PBXBuildFile; fileRef = E9D4A98F127C26B8004A85C1 /* stdio.h */; };
+		E9D4A9CB127C26B9004A85C1 /* string.h in Headers */ = {isa = PBXBuildFile; fileRef = E9D4A990127C26B8004A85C1 /* string.h */; };
+		E9D4A9CC127C26B9004A85C1 /* syscall.h in Headers */ = {isa = PBXBuildFile; fileRef = E9D4A991127C26B8004A85C1 /* syscall.h */; };
+		E9D4A9CD127C26B9004A85C1 /* system.h in Headers */ = {isa = PBXBuildFile; fileRef = E9D4A992127C26B8004A85C1 /* system.h */; };
+		E9D4A9CE127C26B9004A85C1 /* time.h in Headers */ = {isa = PBXBuildFile; fileRef = E9D4A993127C26B8004A85C1 /* time.h */; };
+		E9D4A9CF127C26B9004A85C1 /* video.h in Headers */ = {isa = PBXBuildFile; fileRef = E9D4A994127C26B8004A85C1 /* video.h */; };
+		E9D4A9EC127C26D3004A85C1 /* KTServer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9D4A9EA127C26D3004A85C1 /* KTServer.cpp */; };
+		E9D4A9EE127C26DE004A85C1 /* KTServer.h in Headers */ = {isa = PBXBuildFile; fileRef = E9D4A9ED127C26DE004A85C1 /* KTServer.h */; };
+		E9D4A9F0127C272B004A85C1 /* Kext.h in Headers */ = {isa = PBXBuildFile; fileRef = E9D4A9EF127C272B004A85C1 /* Kext.h */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		E96453CA122B16DB001A5754 /* NANOS */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = NANOS; sourceTree = BUILT_PRODUCTS_DIR; };
+		E96E1AB512DCB36000BA3E9D /* boot.S */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = boot.S; sourceTree = "<group>"; };
+		E96E1AB612DCB36000BA3E9D /* entry.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = entry.c; sourceTree = "<group>"; };
+		E96E1AB812DCB36000BA3E9D /* kernelTask.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = kernelTask.c; sourceTree = "<group>"; };
+		E96E1AB912DCB36000BA3E9D /* scheduler.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = scheduler.c; sourceTree = "<group>"; };
+		E96E1ABB12DCB36000BA3E9D /* shell.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = shell.c; sourceTree = "<group>"; };
+		E96E1ABD12DCB36000BA3E9D /* cmos.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cmos.c; sourceTree = "<group>"; };
+		E96E1ABE12DCB36000BA3E9D /* console.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = console.c; sourceTree = "<group>"; };
+		E96E1ABF12DCB36000BA3E9D /* debug.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = debug.c; sourceTree = "<group>"; };
+		E96E1AC012DCB36000BA3E9D /* gdt.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gdt.c; sourceTree = "<group>"; };
+		E96E1AC112DCB36000BA3E9D /* idt.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = idt.c; sourceTree = "<group>"; };
+		E96E1AC212DCB36000BA3E9D /* interrupt.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = interrupt.c; sourceTree = "<group>"; };
+		E96E1AC412DCB36000BA3E9D /* interrupts.S */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = interrupts.S; sourceTree = "<group>"; };
+		E96E1AC512DCB36000BA3E9D /* keyboard.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = keyboard.c; sourceTree = "<group>"; };
+		E96E1AC612DCB36000BA3E9D /* keymap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = keymap.c; sourceTree = "<group>"; };
+		E96E1AC712DCB36000BA3E9D /* keymap_def.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = keymap_def.c; sourceTree = "<group>"; };
+		E96E1AC812DCB36000BA3E9D /* memory.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = memory.c; sourceTree = "<group>"; };
+		E96E1AC912DCB36000BA3E9D /* message.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = message.c; sourceTree = "<group>"; };
+		E96E1ACA12DCB36000BA3E9D /* panic.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = panic.c; sourceTree = "<group>"; };
+		E96E1ACB12DCB36000BA3E9D /* ps2.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ps2.c; sourceTree = "<group>"; };
+		E96E1ACC12DCB36000BA3E9D /* stdio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = stdio.c; sourceTree = "<group>"; };
+		E96E1ACD12DCB36000BA3E9D /* string.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = string.c; sourceTree = "<group>"; };
+		E96E1ACE12DCB36000BA3E9D /* syscall.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = syscall.c; sourceTree = "<group>"; };
+		E96E1ACF12DCB36000BA3E9D /* system.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = system.c; sourceTree = "<group>"; };
+		E96E1AD112DCB36000BA3E9D /* video.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = video.c; sourceTree = "<group>"; };
+		E9D4A97C127C26B8004A85C1 /* cmos.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cmos.h; sourceTree = "<group>"; };
+		E9D4A97D127C26B8004A85C1 /* console.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = console.h; sourceTree = "<group>"; };
+		E9D4A97E127C26B8004A85C1 /* debug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = debug.h; sourceTree = "<group>"; };
+		E9D4A97F127C26B8004A85C1 /* gdt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gdt.h; sourceTree = "<group>"; };
+		E9D4A981127C26B8004A85C1 /* idt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = idt.h; sourceTree = "<group>"; };
+		E9D4A982127C26B8004A85C1 /* interrupt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = interrupt.h; sourceTree = "<group>"; };
+		E9D4A983127C26B8004A85C1 /* keyboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = keyboard.h; sourceTree = "<group>"; };
+		E9D4A984127C26B8004A85C1 /* keymap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = keymap.h; sourceTree = "<group>"; };
+		E9D4A985127C26B8004A85C1 /* keymap_def.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = keymap_def.h; sourceTree = "<group>"; };
+		E9D4A986127C26B8004A85C1 /* memory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = memory.h; sourceTree = "<group>"; };
+		E9D4A987127C26B8004A85C1 /* message.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = message.h; sourceTree = "<group>"; };
+		E9D4A988127C26B8004A85C1 /* multiboot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = multiboot.h; sourceTree = "<group>"; };
+		E9D4A989127C26B8004A85C1 /* panic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = panic.h; sourceTree = "<group>"; };
+		E9D4A98A127C26B8004A85C1 /* port.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = port.h; sourceTree = "<group>"; };
+		E9D4A98B127C26B8004A85C1 /* ps2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ps2.h; sourceTree = "<group>"; };
+		E9D4A98C127C26B8004A85C1 /* scheduler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scheduler.h; sourceTree = "<group>"; };
+		E9D4A98D127C26B8004A85C1 /* stdbool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stdbool.h; sourceTree = "<group>"; };
+		E9D4A98E127C26B8004A85C1 /* stdint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stdint.h; sourceTree = "<group>"; };
+		E9D4A98F127C26B8004A85C1 /* stdio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stdio.h; sourceTree = "<group>"; };
+		E9D4A990127C26B8004A85C1 /* string.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = string.h; sourceTree = "<group>"; };
+		E9D4A991127C26B8004A85C1 /* syscall.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = syscall.h; sourceTree = "<group>"; };
+		E9D4A992127C26B8004A85C1 /* system.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = system.h; sourceTree = "<group>"; };
+		E9D4A993127C26B8004A85C1 /* time.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = time.h; sourceTree = "<group>"; };
+		E9D4A994127C26B8004A85C1 /* video.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = video.h; sourceTree = "<group>"; };
+		E9D4A9EA127C26D3004A85C1 /* KTServer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KTServer.cpp; sourceTree = "<group>"; };
+		E9D4A9ED127C26DE004A85C1 /* KTServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KTServer.h; sourceTree = "<group>"; };
+		E9D4A9EF127C272B004A85C1 /* Kext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Kext.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		E96453C8122B16DB001A5754 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		08FB7794FE84155DC02AAC07 /* Kernel */ = {
+			isa = PBXGroup;
+			children = (
+				E9D4A97A127C26B8004A85C1 /* Core */,
+				E9D4A9B4127C26B8004A85C1 /* Kext */,
+				E9E5917F12229A0800FB9D0F /* Products */,
+			);
+			name = Kernel;
+			sourceTree = "<group>";
+		};
+		E96E1AB212DCB36000BA3E9D /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				E96E1AB312DCB36000BA3E9D /* boot */,
+				E96E1AB712DCB36000BA3E9D /* scheduler */,
+				E96E1ABA12DCB36000BA3E9D /* shell */,
+				E96E1ABC12DCB36000BA3E9D /* system */,
+				E96E1AD012DCB36000BA3E9D /* video */,
+			);
+			path = Source;
+			sourceTree = "<group>";
+		};
+		E96E1AB312DCB36000BA3E9D /* boot */ = {
+			isa = PBXGroup;
+			children = (
+				E96E1AB512DCB36000BA3E9D /* boot.S */,
+				E96E1AB612DCB36000BA3E9D /* entry.c */,
+			);
+			path = boot;
+			sourceTree = "<group>";
+		};
+		E96E1AB712DCB36000BA3E9D /* scheduler */ = {
+			isa = PBXGroup;
+			children = (
+				E96E1AB812DCB36000BA3E9D /* kernelTask.c */,
+				E96E1AB912DCB36000BA3E9D /* scheduler.c */,
+			);
+			path = scheduler;
+			sourceTree = "<group>";
+		};
+		E96E1ABA12DCB36000BA3E9D /* shell */ = {
+			isa = PBXGroup;
+			children = (
+				E96E1ABB12DCB36000BA3E9D /* shell.c */,
+			);
+			path = shell;
+			sourceTree = "<group>";
+		};
+		E96E1ABC12DCB36000BA3E9D /* system */ = {
+			isa = PBXGroup;
+			children = (
+				E96E1ABD12DCB36000BA3E9D /* cmos.c */,
+				E96E1ABE12DCB36000BA3E9D /* console.c */,
+				E96E1ABF12DCB36000BA3E9D /* debug.c */,
+				E96E1AC012DCB36000BA3E9D /* gdt.c */,
+				E96E1AC112DCB36000BA3E9D /* idt.c */,
+				E96E1AC212DCB36000BA3E9D /* interrupt.c */,
+				E96E1AC412DCB36000BA3E9D /* interrupts.S */,
+				E96E1AC512DCB36000BA3E9D /* keyboard.c */,
+				E96E1AC612DCB36000BA3E9D /* keymap.c */,
+				E96E1AC712DCB36000BA3E9D /* keymap_def.c */,
+				E96E1AC812DCB36000BA3E9D /* memory.c */,
+				E96E1AC912DCB36000BA3E9D /* message.c */,
+				E96E1ACA12DCB36000BA3E9D /* panic.c */,
+				E96E1ACB12DCB36000BA3E9D /* ps2.c */,
+				E96E1ACC12DCB36000BA3E9D /* stdio.c */,
+				E96E1ACD12DCB36000BA3E9D /* string.c */,
+				E96E1ACE12DCB36000BA3E9D /* syscall.c */,
+				E96E1ACF12DCB36000BA3E9D /* system.c */,
+			);
+			path = system;
+			sourceTree = "<group>";
+		};
+		E96E1AD012DCB36000BA3E9D /* video */ = {
+			isa = PBXGroup;
+			children = (
+				E96E1AD112DCB36000BA3E9D /* video.c */,
+			);
+			path = video;
+			sourceTree = "<group>";
+		};
+		E9D4A97A127C26B8004A85C1 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				E96E1AB212DCB36000BA3E9D /* Source */,
+				E9D4A97B127C26B8004A85C1 /* Include */,
+			);
+			name = Core;
+			path = ../Kernel/Core;
+			sourceTree = SOURCE_ROOT;
+		};
+		E9D4A97B127C26B8004A85C1 /* Include */ = {
+			isa = PBXGroup;
+			children = (
+				E9D4A97C127C26B8004A85C1 /* cmos.h */,
+				E9D4A97D127C26B8004A85C1 /* console.h */,
+				E9D4A97E127C26B8004A85C1 /* debug.h */,
+				E9D4A97F127C26B8004A85C1 /* gdt.h */,
+				E9D4A981127C26B8004A85C1 /* idt.h */,
+				E9D4A982127C26B8004A85C1 /* interrupt.h */,
+				E9D4A983127C26B8004A85C1 /* keyboard.h */,
+				E9D4A984127C26B8004A85C1 /* keymap.h */,
+				E9D4A985127C26B8004A85C1 /* keymap_def.h */,
+				E9D4A986127C26B8004A85C1 /* memory.h */,
+				E9D4A987127C26B8004A85C1 /* message.h */,
+				E9D4A988127C26B8004A85C1 /* multiboot.h */,
+				E9D4A989127C26B8004A85C1 /* panic.h */,
+				E9D4A98A127C26B8004A85C1 /* port.h */,
+				E9D4A98B127C26B8004A85C1 /* ps2.h */,
+				E9D4A98C127C26B8004A85C1 /* scheduler.h */,
+				E9D4A98D127C26B8004A85C1 /* stdbool.h */,
+				E9D4A98E127C26B8004A85C1 /* stdint.h */,
+				E9D4A98F127C26B8004A85C1 /* stdio.h */,
+				E9D4A990127C26B8004A85C1 /* string.h */,
+				E9D4A991127C26B8004A85C1 /* syscall.h */,
+				E9D4A992127C26B8004A85C1 /* system.h */,
+				E9D4A993127C26B8004A85C1 /* time.h */,
+				E9D4A994127C26B8004A85C1 /* video.h */,
+			);
+			path = Include;
+			sourceTree = "<group>";
+		};
+		E9D4A9B4127C26B8004A85C1 /* Kext */ = {
+			isa = PBXGroup;
+			children = (
+				E9D4A9B5127C26B8004A85C1 /* Include */,
+				E9D4A9B6127C26B8004A85C1 /* Source */,
+			);
+			name = Kext;
+			path = ../Kernel/Kext;
+			sourceTree = SOURCE_ROOT;
+		};
+		E9D4A9B5127C26B8004A85C1 /* Include */ = {
+			isa = PBXGroup;
+			children = (
+				E9D4A9EF127C272B004A85C1 /* Kext.h */,
+				E9D4A9ED127C26DE004A85C1 /* KTServer.h */,
+			);
+			path = Include;
+			sourceTree = "<group>";
+		};
+		E9D4A9B6127C26B8004A85C1 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				E9D4A9EA127C26D3004A85C1 /* KTServer.cpp */,
+			);
+			path = Source;
+			sourceTree = "<group>";
+		};
+		E9E5917F12229A0800FB9D0F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E96453CA122B16DB001A5754 /* NANOS */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		E9B2E61B122CE12F009B9D91 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E9D4A9B7127C26B8004A85C1 /* cmos.h in Headers */,
+				E9D4A9B8127C26B8004A85C1 /* console.h in Headers */,
+				E9D4A9B9127C26B8004A85C1 /* debug.h in Headers */,
+				E9D4A9BA127C26B8004A85C1 /* gdt.h in Headers */,
+				E9D4A9BC127C26B8004A85C1 /* idt.h in Headers */,
+				E9D4A9BD127C26B8004A85C1 /* interrupt.h in Headers */,
+				E9D4A9BE127C26B8004A85C1 /* keyboard.h in Headers */,
+				E9D4A9BF127C26B8004A85C1 /* keymap.h in Headers */,
+				E9D4A9C0127C26B8004A85C1 /* keymap_def.h in Headers */,
+				E9D4A9C1127C26B8004A85C1 /* memory.h in Headers */,
+				E9D4A9C2127C26B8004A85C1 /* message.h in Headers */,
+				E9D4A9C3127C26B8004A85C1 /* multiboot.h in Headers */,
+				E9D4A9C4127C26B9004A85C1 /* panic.h in Headers */,
+				E9D4A9C5127C26B9004A85C1 /* port.h in Headers */,
+				E9D4A9C6127C26B9004A85C1 /* ps2.h in Headers */,
+				E9D4A9C7127C26B9004A85C1 /* scheduler.h in Headers */,
+				E9D4A9C8127C26B9004A85C1 /* stdbool.h in Headers */,
+				E9D4A9C9127C26B9004A85C1 /* stdint.h in Headers */,
+				E9D4A9CA127C26B9004A85C1 /* stdio.h in Headers */,
+				E9D4A9CB127C26B9004A85C1 /* string.h in Headers */,
+				E9D4A9CC127C26B9004A85C1 /* syscall.h in Headers */,
+				E9D4A9CD127C26B9004A85C1 /* system.h in Headers */,
+				E9D4A9CE127C26B9004A85C1 /* time.h in Headers */,
+				E9D4A9CF127C26B9004A85C1 /* video.h in Headers */,
+				E9D4A9EE127C26DE004A85C1 /* KTServer.h in Headers */,
+				E9D4A9F0127C272B004A85C1 /* Kext.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		E96453C9122B16DB001A5754 /* NANOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E96453D2122B16FA001A5754 /* Build configuration list for PBXNativeTarget "NANOS" */;
+			buildPhases = (
+				E96453C7122B16DB001A5754 /* Sources */,
+				E96453C8122B16DB001A5754 /* Frameworks */,
+				E9B2E61B122CE12F009B9D91 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = NANOS;
+			productName = NANOS;
+			productReference = E96453CA122B16DB001A5754 /* NANOS */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		08FB7793FE84155DC02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 1DEB919308733D9F0010E9CD /* Build configuration list for PBXProject "Kernel" */;
+			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 08FB7794FE84155DC02AAC07 /* Kernel */;
+			productRefGroup = 08FB7794FE84155DC02AAC07 /* Kernel */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				E96453C9122B16DB001A5754 /* NANOS */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		E96453C7122B16DB001A5754 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E9D4A9EC127C26D3004A85C1 /* KTServer.cpp in Sources */,
+				E96E1AD312DCB36000BA3E9D /* boot.S in Sources */,
+				E96E1AD412DCB36000BA3E9D /* entry.c in Sources */,
+				E96E1AD512DCB36000BA3E9D /* kernelTask.c in Sources */,
+				E96E1AD612DCB36000BA3E9D /* scheduler.c in Sources */,
+				E96E1AD712DCB36000BA3E9D /* shell.c in Sources */,
+				E96E1AD812DCB36000BA3E9D /* cmos.c in Sources */,
+				E96E1AD912DCB36000BA3E9D /* console.c in Sources */,
+				E96E1ADA12DCB36000BA3E9D /* debug.c in Sources */,
+				E96E1ADB12DCB36000BA3E9D /* gdt.c in Sources */,
+				E96E1ADC12DCB36000BA3E9D /* idt.c in Sources */,
+				E96E1ADD12DCB36000BA3E9D /* interrupt.c in Sources */,
+				E96E1ADF12DCB36000BA3E9D /* interrupts.S in Sources */,
+				E96E1AE012DCB36000BA3E9D /* keyboard.c in Sources */,
+				E96E1AE112DCB36000BA3E9D /* keymap.c in Sources */,
+				E96E1AE212DCB36000BA3E9D /* keymap_def.c in Sources */,
+				E96E1AE312DCB36000BA3E9D /* memory.c in Sources */,
+				E96E1AE412DCB36000BA3E9D /* message.c in Sources */,
+				E96E1AE512DCB36000BA3E9D /* panic.c in Sources */,
+				E96E1AE612DCB36000BA3E9D /* ps2.c in Sources */,
+				E96E1AE712DCB36000BA3E9D /* stdio.c in Sources */,
+				E96E1AE812DCB36000BA3E9D /* string.c in Sources */,
+				E96E1AE912DCB36000BA3E9D /* syscall.c in Sources */,
+				E96E1AEA12DCB36000BA3E9D /* system.c in Sources */,
+				E96E1AEB12DCB36000BA3E9D /* video.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1DEB919408733D9F0010E9CD /* Build */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				PRODUCT_NAME = NANOS;
+				SDKROOT = macosx10.6;
+			};
+			name = Build;
+		};
+		E93BE26011FC4EE4006EA4BD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				SDKROOT = macosx10.6;
+			};
+			name = Debug;
+		};
+		E93BE26111FC4EE4006EA4BD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				SDKROOT = macosx10.6;
+			};
+			name = Release;
+		};
+		E96453CC122B16DC001A5754 /* Build */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				INSTALL_PATH = /usr/local/bin;
+				PREBINDING = NO;
+				PRODUCT_NAME = NANOS;
+			};
+			name = Build;
+		};
+		E96453CD122B16DC001A5754 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INSTALL_PATH = /usr/local/bin;
+				PREBINDING = NO;
+				PRODUCT_NAME = NANOS;
+			};
+			name = Debug;
+		};
+		E96453CE122B16DC001A5754 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				INSTALL_PATH = /usr/local/bin;
+				PREBINDING = NO;
+				PRODUCT_NAME = NANOS;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1DEB919308733D9F0010E9CD /* Build configuration list for PBXProject "Kernel" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB919408733D9F0010E9CD /* Build */,
+				E93BE26011FC4EE4006EA4BD /* Debug */,
+				E93BE26111FC4EE4006EA4BD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Build;
+		};
+		E96453D2122B16FA001A5754 /* Build configuration list for PBXNativeTarget "NANOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E96453CC122B16DC001A5754 /* Build */,
+				E96453CD122B16DC001A5754 /* Debug */,
+				E96453CE122B16DC001A5754 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Build;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 08FB7793FE84155DC02AAC07 /* Project object */;
+}

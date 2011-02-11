@@ -1,16 +1,17 @@
 NANOS is a very simple OS (currently more a Kernel than an OS) for the x86 architecture. The goal is to learn more about low-level programming not to create a "super duper hardcore" OS.
 
 Build:
-You need a compiler that can create ELF binaries and GRUB, so the best is to compile everything with a Linux distribution of your choice.
+You need a compiler that can create ELF binaries and GRUB, so the best is to compile everything in a Linux distribution of your choice.
 Run "complete.sh" from the terminal (do not "cd" to the NANOS folder!), wait until the compiler (default: GCC) and GRUB are done. After this easy step, you can boot the generated iso ("NANOS.iso" inside the "Build" folder").
 
 Currently implemented:
 - Memory manager
 - Interrupt manager
 - Multitasking
-- A simple shell
+- Some parts of the default C library
 
 Todo:
 - Drivers (ATA, USB etc)
 - Filesystem (Fat32?)
+- A shell
 - More things (there is no "finished" state, as long as I have fun working on this project, I will implement new things).
