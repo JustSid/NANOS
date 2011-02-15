@@ -23,6 +23,9 @@
 extern "C" {
 #endif
 
+/**
+ * Prints the message onto the screen, outputs the current CPU state and then halts the kernel.
+ **/
 extern void panic(char *reason, ...);
 
 #ifdef __cplusplus

@@ -64,7 +64,7 @@ void vd_scrollLine()
 	
 	for(i=0; i<VD_SIZE_X; i++)
 	{
-		int offset = (VD_SIZE_Y * VD_SIZE_X + i) * 2;
+		int offset = ((VD_SIZE_Y - 1) * VD_SIZE_X + i) * 2;
 		vd_videoMemory[offset] = 0;
 		vd_videoMemory[offset + 1] = 0;
 	}

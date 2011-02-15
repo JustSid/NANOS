@@ -24,6 +24,7 @@
 #include "memory.h"
 #include "system.h"
 #include "syscall.h"
+#include "cmos.h"
 
 static char sh_lastKey = ' ';
 static kb_callback_map *sh_callback = NULL;
@@ -60,7 +61,7 @@ int shell_main()
 {
 	int i;
 	sd_nameTask("krn.nanos.mishelle");
-
+	
 	for(i=0; i<80; i++)
 		cn_putc('-');
 	

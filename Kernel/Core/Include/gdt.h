@@ -40,11 +40,25 @@
 extern "C" {
 #endif
 
+/**
+ * Sets an GDT entry
+ **/
 extern void gdt_setEntry(int index, unsigned int base, unsigned int limit, int flags);
+	
+/**
+ * Commits all GDT entries (must be called after all entries has been set!)
+ **/
 extern void gdt_commitEntries();
 
+/**
+ * Sets all default GDT entries
+ @param commitImmediately true if the GDT entries should be flushed via gdt_commitEntries() after they have been set, otherwise false
+ **/
 extern void gdt_defaults(bool commitImmediately);
 
+/**
+ * Sets the given TSS entry at the given index
+ **/
 extern void gdt_setTSSEntry(uint32_t entry, int index);
 
 #ifdef __cplusplus

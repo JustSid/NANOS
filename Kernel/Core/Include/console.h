@@ -27,17 +27,48 @@
 extern "C" {
 #endif
 
+/**
+ * Sets the text color for all following texts
+ @param color The new color for the text, values are described in video.h
+ @default VD_COLOR_LGRAY
+ **/
 extern void cn_setTextColor(char color);
 
+/**
+ * Clears all attributes and texts from the screen
+ **/
 extern void cn_cls();
+
+/**
+ * Writes the given character at the position of the cursor onto the screen
+ **/
 extern void cn_putc(char c);
+
+/**
+ * Writes the given null terminated CString at the position of the cursor onto the screen
+ **/
 extern void cn_puts(char *string);
 
+/**
+ * Prints the string onto the screen by first evaluating the format string + parameters and then using syscall(sys_print, string) to print the string onto the screen.
+ **/
 extern void cn_printf(const char *format, ...);
 
+/**
+ * Scrolls one line up
+ @remark Buggy!
+ **/
 extern void cn_scrollLine();
+	
+/**
+ * Sets the cursor visibility
+ @param visible true if the cursor should be visible, otherwise false
+ **/
 extern void cn_setCursor(bool visible);
 
+/**
+ * Deletes the character at the cursor position and shifts the cursor one character back
+ **/
 extern void cn_delchar();
 
 #ifdef __cplusplus

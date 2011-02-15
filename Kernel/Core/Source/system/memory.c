@@ -289,29 +289,6 @@ void mm_free(void *ptr)
 	}
 }
 
-void mm_cfree(void *ptr)
-{
-	mm_memoryFragment *fragment = firstFragment;
-	while(fragment) 
-	{
-		if(fragment->start == ptr)
-		{
-			if(fragment->flags & MM_FRAGMENT_WIRED)
-				return; 
-			
-			
-			memset(fragment->start, 0, fragment->size);
-			
-			mm_fragments --;
-			fragment->flags = MM_FRAGMENT_FREE; 
-			fragment->pid	= SD_PID_INVALID;
-			return;
-		}
-		
-		fragment = fragment->next;
-	}
-}
-
 void mm_defrag()
 {
 	mm_memoryFragment *fragment = firstFragment;

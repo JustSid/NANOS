@@ -36,9 +36,18 @@ extern "C" {
 #define CMOS_REGISTER_STATEA	0x0A
 #define CMOS_REGISTER_STATEB	0x0B
 
+/**
+ * Reads the data from the CMOS at the given offset and returns it
+ **/
 extern uint8_t	cmos_readData(uint8_t offset);
+	
+/**
+ * Writes the given data into the CMOS at the given offset
+ **/
 extern void		cmos_setData(uint8_t offset, uint8_t data);
 
+	
+	
 #define CMOS_RTC_FLAG_SUMMERTIME	1 
 #define CMOS_RTC_FLAG_24HOUR		2
 #define CMOS_RTC_FLAG_BINARY		4
@@ -48,8 +57,19 @@ extern void		cmos_setData(uint8_t offset, uint8_t data);
 #define CMOS_RTC_FLAG_PERIODICINT	64
 #define CMOS_RTC_FLAG_NOUPDATE		128
 
+/**
+ * Sets the given real time clock flag(s)
+ **/
 extern void cmos_setRTCFlags(uint8_t flags);
+	
+/**
+ * Appends the given real time clock flag(s) to the existing ones
+ **/
 extern void cmos_appendRTCFlags(uint8_t flags);
+	
+/**
+ * Removes the given real time clock flag(s)
+ **/
 extern void cmos_removeRTCFlags(uint8_t flags);
 
 #ifdef __cplusplus

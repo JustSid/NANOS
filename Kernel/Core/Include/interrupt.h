@@ -31,8 +31,8 @@ typedef struct
     uint32_t   edi;
     uint32_t   ebp;
 	
-    uint32_t   intr;
-    uint32_t   error;
+    uint32_t   intr; // Interrupt number
+    uint32_t   error; // Error number
 	
     uint32_t   eip;
     uint32_t   cs;
@@ -45,14 +45,34 @@ typedef struct
 extern "C" {
 #endif
 
+/**
+ * Interrupt handler
+ @param interrupt The interrupt number
+ @param state The CPU state
+ @return A new CPU state, the old CPU state or NULL
+ **/
 typedef ir_cpuState *(*ir_interruptHandle)(uint32_t interrupt, ir_cpuState *state);
 
+/**
+ * Enables interrupts
+ **/
 extern void ir_enableInterrupts();
+	
+/**
+ * Disables interrupts
+ **/
 extern void ir_disableInterrupts();
 
+/**
+ * Adds a new interrupt handler for the given range.
+ @param interruptHandle Function that will be called to handle the interrupt. Must not be NULL
+ @param handleBegin The begin of the interrupt range
+ @param handleEnd The end of the interrupt range, can be the same as handleBegin
+ **/
 extern int ir_installInterruptHandler(ir_interruptHandle interruptHandle, uint32_t handleBegin, uint32_t handleEnd);
+	
+	
 extern ir_cpuState *ir_handleInterrupt(ir_cpuState *state);
-
 extern int ir_init();
 	
 #ifdef __cplusplus

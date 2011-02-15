@@ -201,7 +201,7 @@ uint32_t sd_spawnTask(void (*entry)())
 		sd_createThread(task, entry, 0, SD_THREAD_STACK_SIZE);
 		if(!task->main_thread)
 		{
-			mm_cfree(task);
+			mm_free(task);
 			return SD_PID_INVALID;
 		}
 		
@@ -426,6 +426,7 @@ ir_cpuState *sd_kill(uint32_t pid)
 		task->died = true;
 		sd_threadDied = true;
 		
+		mm_clear(pid);
 		return sd_step(0, NULL);
 	}
 	
@@ -440,7 +441,10 @@ void sd_nameTask(char *name)
 		sd_currentTask->name = (char *)mm_alloc((strlen(name) + 1) * sizeof(char));
 		
 		if(sd_currentTask->name) 
+		{
 			strcpy(sd_currentTask->name, name);
+			mm_free(oldname);
+		}
 		else 
 			sd_currentTask->name = oldname;
 	}
@@ -453,7 +457,7 @@ sd_task *sd_taskWithPid(uint32_t pid)
 		sd_task *task = sd_firstTask;
 		while(task)
 		{
-			if(task->pid == pid)
+			if(task->pid == pid && !task->died)
 				return task;
 			
 			task = task->next;

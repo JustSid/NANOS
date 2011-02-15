@@ -33,10 +33,24 @@
 extern "C" {
 #endif
 
+/**
+ * Sets an given IDT entry
+ **/
 extern void idt_setEntry(int index, void (*fn)(), unsigned int selector, int flags);
+	
+/**
+ * Commits all current IDT entries. Similia to gdt_commitEntries, but for the IDT
+ **/
 extern void idt_commitEntries();
 
+/**
+ * Initializes the PIC
+ **/
 extern void idt_picInit();
+	
+/**
+ * Loads all default IDT entries, initializes the pic and commits the entries, depending on commitImmediately
+ **/
 extern void idt_defaults(bool commitImmediately);
 
 #ifdef __cplusplus

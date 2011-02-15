@@ -36,13 +36,30 @@ extern "C" {
  **/
 extern size_t mm_init(struct multiboot_info *bootinfo);
 
+/**
+ * Prints the current memory fragments into the console
+ **/
 extern void mm_dumpMemory();
 
+/**
+ * Allocates a new chunk of memory with the given size and returns a pointer to it
+ **/
 extern void *mm_alloc(size_t size);
+	
+/**
+ * Marks the memory as free, the memory must be allocated prior to its freeing.
+ **/
 extern void mm_free(void *ptr);
-extern void mm_cfree(void *ptr);
 
+/**
+ * Defragments the heap. Gets automatically called when a task exits
+ **/
 extern void mm_defrag();
+	
+/**
+ * Clears all memory allocated by the task with the given id.
+ @remark The task must already been terminated before you can call this function
+ **/
 extern void mm_clear(uint32_t pid);
 
 #ifdef __cplusplus
