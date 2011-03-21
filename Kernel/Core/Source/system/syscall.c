@@ -148,6 +148,14 @@ uint32_t sys_registerSyscall(uint32_t type, sys_fillSyscall fill, sys_execSyscal
 }
 
 
+
+
+ir_cpuState *mapSyscall(uint32_t interrupt, ir_cpuState *state)
+{
+	state->eax = (uint32_t)&syscall;
+	return state;
+}
+
 // Default syscalls
 
 void sys_printFill(syscallEvent *event, va_list args)
@@ -181,7 +189,7 @@ void sys_sleepExec(syscallEvent *event)
 
 int sc_init()
 {
-	if(ir_installInterruptHandler(syscallEx, 0x30, 0x30) != 1)
+	if(ir_installInterruptHandler(syscallEx, 0x30, 0x30) != 1 || ir_installInterruptHandler(mapSyscall, 0x31, 0x31) != 1)
 		return 0;
 	
 	uint32_t rPrint, rSleep;

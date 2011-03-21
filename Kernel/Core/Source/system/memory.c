@@ -168,11 +168,73 @@ size_t mm_init(struct multiboot_info *bootinfo)
 		currMap ++;
 	}
 	
+	
+	// Virtual Memory
+	/*uint32_t cr0;
+	
+    asm volatile("mov %%cr0, %0" : "=r" (cr0));
+    cr0 |= (1 << 31);
+    asm volatile("mov %0, %%cr0" : : "r" (cr0));*/
+	
 	// We are done :)
 	cn_puts("ok\n");
 	
 	return mm_fragments;
 }
+
+/*mm_context *mm_createContext()
+{
+    mm_context *context = (mm_context *)mm_alloc(sizeof(mm_context));
+    if(context)
+    {
+        context->pagedirectory = mm_alloc(4096);
+        if(!context->pagedirectory)
+        {
+            mm_free(context);
+            return NULL;
+        }
+        
+        memset(context->pagedirectory, 0, 4096);
+    }
+    
+    return context;
+}
+
+int mm_map_page(mm_context *context, uintptr_t virtAddress, uintptr_t physAddress, uint32_t flags)
+{
+    if((virtAddress & 0xFFF) || (physAddress & 0xFFF))
+        return -1;
+        
+
+    uint32_t index          = virtAddress / 4096;
+    uint32_t directoryIndex = index / 1024;
+    uint32_t tableIndex     = index % 1024;
+    
+    uint32_t *table;
+    if(context->pagedirectory[pd_index] & MM_PAGETABLEFLAG_PRESENT) 
+        table = (uint32_t *)(context->pagedirectory[directoryIndex] & ~0xFFF);
+    else
+    {
+        table = (uint32_t *)mm_alloc(1024);
+        if(!table)
+            return -2;
+        
+        memset(table, 0, 1024);
+        context->pagedirectory[directoryIndex] = ((uint32_t)table) | flags; 
+    }
+    
+    table[tableIndex] = physAddress | flags;
+    __asm__ volatile("invlpg %0" : : "m" (*(char *)virtAddress));
+    
+    return 1;
+}
+
+void mm_activate_context(struct mm_context *context)
+{
+    __asm__ volatile("mov %0, %%cr3" : : "r" (context->pagedirectory));
+}*/
+
+
 
 void mm_dumpMemory()
 {

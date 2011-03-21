@@ -109,6 +109,7 @@ extern void idt_stub_46();
 extern void idt_stub_47();
 
 extern void idt_stub_48();
+extern void idt_stub_49();
 
 void idt_defaults(bool commitImmediately)
 {
@@ -152,6 +153,7 @@ void idt_defaults(bool commitImmediately)
 	idt_setEntry(47, idt_stub_47, 0x8, IDT_FLAG_INTERRUPT_GATE | IDT_FLAG_RING0 | IDT_FLAG_PRESENT);
 	
     idt_setEntry(48, idt_stub_48, 0x8, IDT_FLAG_INTERRUPT_GATE | IDT_FLAG_RING3 | IDT_FLAG_PRESENT);
+	idt_setEntry(49, idt_stub_49, 0x8, IDT_FLAG_INTERRUPT_GATE | IDT_FLAG_RING3 | IDT_FLAG_PRESENT);
 	
 	if(commitImmediately)
 	{

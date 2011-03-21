@@ -121,7 +121,7 @@ ir_cpuState *ir_handleInterrupt(ir_cpuState *state)
 	if(returnState)
 		return returnState;
 	
-	char panicReason[256];
+	char panicReason[256]; // Oh array, y u so large?
 	sprintf(panicReason, "Unhandled interrupt %i occured!", (unsigned int)state->intr);
 	panic(panicReason);
 	

@@ -49,6 +49,8 @@ sd_thread *sd_createThread(sd_task *task, void (*entry)(), int priority, uint16_
 		thread->stack = (uint8_t *)mm_alloc(stackSize * sizeof(uint8_t));
 		thread->state = (ir_cpuState *)mm_alloc(sizeof(ir_cpuState));
 		
+		//cn_printf("Thread %p state = %p\n", thread, thread->state);
+		
 		if(!thread->stack || !thread->state)
 		{
 			if(!thread->stack) mm_free(thread->stack);
@@ -74,7 +76,7 @@ sd_thread *sd_createThread(sd_task *task, void (*entry)(), int priority, uint16_
 		
 		thread->state->eflags = 0x200;		
 		
-		thread->timeMax		= 10;
+		thread->timeMax		= 2;
 		thread->timeLeft	= thread->timeMax;
 		thread->timeSleep	= 0;
 		
@@ -111,7 +113,8 @@ uint32_t sd_attachThread(void (*entry)())
 	if(sd_currentTask)
 	{
 		sd_thread *thread = sd_createThread(sd_currentTask, entry, 0, SD_THREAD_STACK_SIZE);
-		if(thread) return thread->id;
+		if(thread) 
+			return thread->id;
 	}
 	
 	return SD_TID_INVALID;
@@ -124,7 +127,8 @@ int sd_threadRunning(uint32_t threadId)
 		sd_thread *thread = sd_currentTask->main_thread;
 		while(thread)
 		{
-			if(thread->id == threadId && !thread->died) return 1;
+			if(thread->id == threadId && !thread->died) 
+				return 1;
 			
 			thread = thread->next;
 		}
@@ -255,6 +259,7 @@ void sd_threadEntry()
 		thread->entry();
 		thread->died	= true;
 		sd_threadDied	= true;		
+		
 		while(1){} // Wait until the thread really dies
 	}
 }
@@ -313,7 +318,7 @@ void sd_cleanUp()
 			task = task->next;
 			ptask->next = task;
 			
-			if(st_isVerbose())
+			//if(st_isVerbose())
 				cn_printf("Task %i (%s) exited\n", _task->pid, _task->name);
 			
 			sd_destroyTask(_task);
@@ -399,7 +404,7 @@ ir_cpuState *sd_step(uint32_t intr, ir_cpuState *state)
 		inb(0x71);
 	}
 	
-	if(sd_currentTask && sd_currentTask->current_thread)
+	if(sd_currentTask && sd_currentTask->current_thread && sd_currentTask->current_thread->state)
 	{
 		if(st_isVerbose())
 		{
@@ -548,7 +553,7 @@ int sd_init()
 	if(sd_spawnTask(kernelTask) == SD_PID_INVALID || !ir_installInterruptHandler(sd_step, 0x28, 0x28))
 		return 0;
 	
-	cmos_appendRTCFlags(CMOS_RTC_FLAG_PERIODICINT);
+	cmos_appendRTCFlags(CMOS_RTC_FLAG_PERIODICINT);	
 	cn_printf("ok\n");
 	
 	return 1;

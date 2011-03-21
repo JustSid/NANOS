@@ -17,6 +17,7 @@
 //
 
 #include "console.h"
+#include "loader.h"
 #include "scheduler.h"
 #include "stdio.h"
 #include "keyboard.h"
@@ -57,7 +58,7 @@ void keydown(unsigned char input)
 	}
 }
 
-int shell_main()
+void shell_main()
 {
 	int i;
 	sd_nameTask("krn.nanos.mishelle");
@@ -85,8 +86,13 @@ int shell_main()
 		
 		sh_input[sh_index-1] = '\0';
 		
-		// TODO: Real tasks for the win :)
-		if(strcmp(sh_input, "cls") == 0)
+		
+		ld_image *image = ld_imageWithName(sh_input);
+		if(image)
+		{
+			sd_spawnTask(image->entry);
+		}
+		else if(strcmp(sh_input, "cls") == 0)
 		{
 			cn_cls();
 			continue;
@@ -106,7 +112,7 @@ int shell_main()
 			kb_removeKeyboardHook(sh_callback);
 			sh_callback = NULL;
 			
-			return 0;
+			return;
 		}
 		else if(strcmp(sh_input, "tasks") == 0)
 		{
@@ -130,9 +136,8 @@ int shell_main()
 		}
 		else
 			cn_printf("   Unknown command %s", sh_input);
+
 		
 		cn_putc('\n');	
 	}
-	
-	return 0;
 }

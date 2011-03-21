@@ -17,6 +17,7 @@
 //
 
 #include "multiboot.h"
+#include "cmos.h"
 
 #include "memory.h"
 #include "interrupt.h"
@@ -33,15 +34,17 @@
 #include "ps2.h"
 #include "stdio.h"
 
+#include "loader.h"
+
 #define VersionMajor 0
 #define VersionMinor 2
-#define VersionPatch 0
+#define VersionPatch 5
 #define VersionCreate(major, minor, patch) (((major) << 16) | ((minor) << 8) | (patch))
 #define VersionCurrent VersionCreate(VersionMajor, VersionMinor, VersionPatch)
 
 // High-Level boot entry
 void boot(struct multiboot_info *bootinfo)
-{
+{	
 	cn_cls();
 	char nanosWelcome[255];
 	sprintf(nanosWelcome, "NANOS build from %s %s. Version: %i.%i.%i:%i\n", __DATE__, __TIME__, VersionMajor, VersionMinor, VersionPatch, VersionCurrent);
@@ -51,6 +54,7 @@ void boot(struct multiboot_info *bootinfo)
 	
 	ir_disableInterrupts();
 	
+	// Load some basic components
 	if(mm_init(bootinfo) == 0)
 		panic("Error while initializing the memory manager!");
 	
@@ -66,7 +70,18 @@ void boot(struct multiboot_info *bootinfo)
 	ps_init();
 	km_init();
 	
-	cn_printf("\n\n");
+	
+	// Load the multiboot modules
+	cn_printf("\nLoading %i modules\n", bootinfo->mbs_mods_count);
+	struct multiboot_module *modules = bootinfo->mbs_mods_addr;
+	
+	uint32_t i;
+    for(i=0; i<bootinfo->mbs_mods_count; i++) 
+		ld_loadMultibootModule(&modules[i]);
+	
+	
+	// And here we go...
+	cn_puts("\n\n");
 	ir_enableInterrupts();
 	
 	while(1) {__asm__ volatile ("hlt");}

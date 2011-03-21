@@ -43,7 +43,7 @@ struct multiboot_mmap
     uint32_t    type;
 } __attribute__((packed));
 
-struct multiboot_moduleb
+struct multiboot_module
 {
 	void		*mod_start;
 	void		*mod_end;

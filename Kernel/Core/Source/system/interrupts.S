@@ -73,7 +73,8 @@ idt_stub 45 // FPU
 idt_stub 46 // primary IDE/ATAPI/ATA
 idt_stub 47 // secondary IDE/ATAPI/ATA
 
-idt_stub 48
+idt_stub 48 // Syscall
+idt_stub 49 // Request to map syscall
 
 
 // !---- Pre Handler ---- ! //

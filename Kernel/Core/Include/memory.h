@@ -26,9 +26,18 @@
 #define MM_FRAGMENT_USED	2
 #define MM_FRAGMENT_WIRED	4
 
+#define MM_PAGETABLEFLAG_PRESENT    1
+#define MM_PAGETABLEFLAG_WRITEABLE  2
+#define MM_PAGETABLEFALG_USERSPACE  4
+
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+typedef struct
+{
+    uint32_t *pagedirectory;
+} mm_context;
 
 /**
  * Initializes the physical memory manager using the informations from the multiboot info.

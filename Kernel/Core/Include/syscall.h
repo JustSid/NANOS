@@ -26,12 +26,8 @@
 extern "C" {
 #endif
 
-typedef enum
-{
-	sys_print,
-	sys_sleep,
-} syscall_system;
-
+#define sys_print 0
+#define sys_sleep 1
 
 #define SYSCALL_MEMBER 8
 #define SYSCALL_INVALID UINT32_MAX

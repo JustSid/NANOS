@@ -1,9 +1,9 @@
 //
-//  kernelTask.c
-//  NANOS
+//  Test.c
+//  Programs
 //
 //  Created by Sidney Just
-//  Copyright (c) 2010 by Sidney Just
+//  Copyright (c) 2011 by Sidney Just
 //  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated 
 //  documentation files (the "Software"), to deal in the Software without restriction, including without limitation 
 //  the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, 
@@ -16,16 +16,12 @@
 //  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#include "scheduler.h"
-#include "syscall.h"
-#include "console.h"
+#include "libkernel.h"
 
-extern void shell_main();
-
-void kernelTask()
+void _start()
 {
-	sd_nameTask("krn.nanos.kernel_task");
-	sd_spawnTask(shell_main);
+	loadSyscall();
 	
-	while(1) {}
+	syscall(sys_print, "Hello World\n");
+	syscall(sys_sleep, 0);
 }
