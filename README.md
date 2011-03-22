@@ -4,7 +4,7 @@ Its not meant to be a kernel that can be used as a base for some kind of serious
 
 The whole architecture of the kernel might look a little bit wonky/wrong and really everything is subject to change, so I might end up inventing the wheel multiple times for NANOS. Beside that, NANOS is open source and you are free to contribute to this project or just do something completely different with it. Everything is licensed under the MIT license, no copy left bullshit, just real freedom.
 
-A bootable image of the most recent version can be found [here]: http://widerwille.com/stuff/nanos.zip
+A bootable image of the most recent version can be found [here] [dllink].
 
 ## Features
 NANOS is currently in a very early stage, implemented are the following features:
@@ -28,9 +28,10 @@ NANOS ships with a lot of bugs, the most annoying bugs are listed here:
 Beside that everything is higgledy-piggledy, I tried to introduce a naming convention for functions and types: Everything is diveded into components and every component has its very own two character namespace. As C functions always share the same namespace, the component namespace is used as prefix for functions followed by an underscore.
 
 Example:
-> Component: Scheduler (scheduler.c and .h)
-> Namespace: sd
-> Some function: sd_foo();
+
+* Component: `Scheduler` (scheduler.c and .h)
+* Namespace: `sd`
+* Some function: `sd_foo()`;
 
 The same also counts for structs, variables, defines, enums etc. However, default C library functions don't contain some special prefix or suffix and they are defined in the heades described by the C standard (NANOS uses ISO-C99).
 
@@ -45,3 +46,5 @@ INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PA
 PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
 FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, 
 ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+[dllink]: http://widerwille.com/stuff/nanos.zip
