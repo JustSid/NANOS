@@ -90,7 +90,12 @@ void shell_main()
 		ld_image *image = ld_imageWithName(sh_input);
 		if(image)
 		{
-			sd_spawnTask(image->entry);
+			uint32_t pid = sd_spawnTask(image->entry);
+			
+			while(sd_taskWithPid(pid) != NULL)
+				syscall(sys_sleep);
+			
+			cn_printf("\n");
 		}
 		else if(strcmp(sh_input, "cls") == 0)
 		{
@@ -124,10 +129,7 @@ void shell_main()
 		}
 		else if(strcmp(sh_input, "verbose") == 0)
 		{
-			bool verbosity = st_isVerbose();
-			verbosity ^= 1;
-			
-			st_setVerbosity(verbosity);
+			st_setVerbosity(!st_isVerbose());
 		}
 		else if(strncmp(sh_input, "echo ", 5) == 0)
 		{

@@ -318,7 +318,7 @@ void sd_cleanUp()
 			task = task->next;
 			ptask->next = task;
 			
-			//if(st_isVerbose())
+			if(st_isVerbose())
 				cn_printf("Task %i (%s) exited\n", _task->pid, _task->name);
 			
 			sd_destroyTask(_task);
