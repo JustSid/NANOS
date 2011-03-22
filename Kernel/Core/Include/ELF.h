@@ -23,7 +23,7 @@
 #include "stdint.h"
 
 #define ELF_MAGIC 0x464C457F
-#define ELF_LOAD 1
+#define ELF_LOAD  1
 
 struct elf_header 
 {

@@ -17,6 +17,8 @@
 //
 
 
+#include "debug.h"
+#include "assert.h"
 #include "scheduler.h"
 #include "cmos.h"
 #include "string.h"
@@ -35,7 +37,6 @@ static bool		sd_threadDied	= false;
 static bool		sd_enabled		= true;
 
 static ir_cpuState *kernelState = NULL;
-
 void sd_threadEntry();
 
 sd_thread *sd_createThread(sd_task *task, void (*entry)(), int priority, uint16_t stackSize)
@@ -43,13 +44,14 @@ sd_thread *sd_createThread(sd_task *task, void (*entry)(), int priority, uint16_
 	if(!task || !entry || stackSize == 0)
 		return NULL;
 	
+	if(priority > SD_THREAD_PRIORITY_TOO_MUCH)
+		priority = SD_THREAD_PRIORITY_DEFAULT;
+	
 	sd_thread *thread = (sd_thread *)mm_alloc(sizeof(sd_task));
 	if(thread)
 	{
 		thread->stack = (uint8_t *)mm_alloc(stackSize * sizeof(uint8_t));
 		thread->state = (ir_cpuState *)mm_alloc(sizeof(ir_cpuState));
-		
-		//cn_printf("Thread %p state = %p\n", thread, thread->state);
 		
 		if(!thread->stack || !thread->state)
 		{
@@ -57,6 +59,8 @@ sd_thread *sd_createThread(sd_task *task, void (*entry)(), int priority, uint16_
 			if(!thread->state) mm_free(thread->state);
 			
 			mm_free(thread);
+			
+			db_conditionalLogLevel(DB_LEVEL_WARNING, st_isVerbose(), "Could not create thread for %i (out of memory!)\n", task->pid);
 			return NULL;
 		}
 		
@@ -76,7 +80,7 @@ sd_thread *sd_createThread(sd_task *task, void (*entry)(), int priority, uint16_
 		
 		thread->state->eflags = 0x200;		
 		
-		thread->timeMax		= 2;
+		thread->timeMax		= 1 + (priority * 2);
 		thread->timeLeft	= thread->timeMax;
 		thread->timeSleep	= 0;
 		
@@ -112,7 +116,8 @@ uint32_t sd_attachThread(void (*entry)())
 {
 	if(sd_currentTask)
 	{
-		sd_thread *thread = sd_createThread(sd_currentTask, entry, 0, SD_THREAD_STACK_SIZE);
+		sd_thread *thread = sd_createThread(sd_currentTask, entry, SD_THREAD_PRIORITY_DEFAULT, SD_THREAD_STACK_SIZE);
+		
 		if(thread) 
 			return thread->id;
 	}
@@ -137,6 +142,18 @@ int sd_threadRunning(uint32_t threadId)
 	return 0;
 }
 
+void sd_threadSetPriority(uint8_t priority)
+{
+	if(sd_currentTask)
+	{
+		if(priority > SD_THREAD_PRIORITY_TOO_MUCH)
+			priority = SD_THREAD_PRIORITY_DEFAULT;
+		
+		sd_thread *thread = sd_currentTask->current_thread;
+		thread->timeMax = 1 + (priority * 2);
+	}
+}
+
 void sd_destroyThread(sd_thread *thread)
 {
 	if(thread)
@@ -146,6 +163,10 @@ void sd_destroyThread(sd_thread *thread)
 		mm_free(thread);
 	}
 }
+
+
+
+
 
 uint32_t sd_spawnTask(void (*entry)())
 {
@@ -206,9 +227,12 @@ uint32_t sd_spawnTask(void (*entry)())
 		if(!task->main_thread)
 		{
 			mm_free(task);
+			
+			db_conditionalLogLevel(DB_LEVEL_WARNING, st_isVerbose(), "Could not create task (out of memory!)\n");
 			return SD_PID_INVALID;
 		}
 		
+		task->current_thread = task->main_thread;
 		
 		if(sd_firstTask)
 		{
@@ -227,9 +251,7 @@ uint32_t sd_spawnTask(void (*entry)())
 		else 
 			sd_firstTask = task;
 		
-		if(st_isVerbose())
-			cn_printf("Created task %i\n", task->pid);
-			
+		db_conditionalLog(st_isVerbose(), "Created task: %i (t:%p, t:%p, s:%p)\n", task->pid, task, task->current_thread, task->current_thread->state);
 		return task->pid;
 	}
 	
@@ -250,6 +272,10 @@ void sd_destroyTask(sd_task *task)
 }
 
 
+
+
+
+
 void sd_threadEntry()
 {
 	if(sd_currentTask && sd_currentTask->current_thread)
@@ -265,14 +291,17 @@ void sd_threadEntry()
 }
 
 
+// Collects all died threads and purges them from the scheduler list
 void sd_cleanUp()
 {
 	sd_task *task	= sd_firstTask;
 	sd_task *ptask	= NULL;
+	
 	while(task)
 	{
 		sd_thread *thread	= task->main_thread;
 		sd_thread *pthread	= NULL;
+		
 		while(thread)
 		{
 			if(thread->died)
@@ -298,30 +327,40 @@ void sd_cleanUp()
 		}
 		
 		
+		
+		
 		if(task->died)
 		{
-			if(task == sd_currentTask)
-				sd_currentTask = sd_currentTask->next;
-			
-			
 			if(task == sd_firstTask)
 			{
 				sd_firstTask = task->next;
-				task = sd_firstTask;
-				ptask = NULL;
 				
-				continue;
+				task  = sd_firstTask;
+				ptask = NULL;
 			}
+			
+			
+			if(task == sd_currentTask)
+			{
+				sd_currentTask = task->next;
+				
+				if(!sd_currentTask)
+					sd_currentTask = sd_firstTask;
+			}
+			
+			
 			
 			sd_task *_task = task;
 			
 			task = task->next;
-			ptask->next = task;
 			
-			if(st_isVerbose())
-				cn_printf("Task %i (%s) exited\n", _task->pid, _task->name);
+			if(ptask)
+				ptask->next = task;
 			
+			
+			db_conditionalLog(st_isVerbose(), "Task %i (%s) exited\n", _task->pid, _task->name);
 			sd_destroyTask(_task);
+			continue;
 		}
 		
 		ptask = task;
@@ -336,68 +375,61 @@ ir_cpuState *sd_step(uint32_t intr, ir_cpuState *state)
 	if(!firstStep)
 	{
 		memcpy(kernelState, state, sizeof(ir_cpuState));
+		
+		state = NULL;
+		sd_currentTask = sd_firstTask;
+		
 		firstStep = true;
 	}
 	
+	
 	if(!sd_enabled)
-		return state;
-	
-	if(sd_threadDied)
 	{
-		sd_cleanUp();
-		sd_threadDied = false;
+		if(intr > 0)
+		{
+			outb(0x70, 0x0C);
+			inb(0x71);
+		}
 		
-		state = NULL;
+		return state;
 	}
 	
-	if(sd_currentTask)
-	{
-		if(sd_currentTask->current_thread)
-		{
-			if(state)
-				memcpy(sd_currentTask->current_thread->state, state, sizeof(ir_cpuState)); // Save the state
-			
-			sd_currentTask->current_thread->timeLeft --;
-			
-			if(sd_currentTask->current_thread->timeLeft == 0)
-			{
-				sd_currentTask->current_thread->timeLeft = sd_currentTask->current_thread->timeMax;
-				
-				if(sd_currentTask->current_thread->next)
-				{
-					sd_currentTask->current_thread = sd_currentTask->current_thread->next;
-				}
-				else 
-				{
-					sd_currentTask->current_thread = sd_currentTask->main_thread;
-					sd_currentTask = sd_currentTask->next;
-				}
+	
+	
+	
+	sd_task *ptask = sd_currentTask;
+	sd_cleanUp();
+	
+	if(ptask != sd_currentTask)
+		state = NULL;
+	
+	
+	assert(sd_currentTask);
+	assert(sd_currentTask->current_thread);
+	
+	if(state) // Save the current CPU state
+		memcpy(sd_currentTask->current_thread->state, state, sizeof(ir_cpuState));
 
-			}
-		}
-		else 
-		{
-			if(sd_currentTask->main_thread)
-			{
-				sd_currentTask->current_thread = sd_currentTask->main_thread;
-				sd_currentTask->current_thread->timeLeft = sd_currentTask->current_thread->timeMax;
-			}
-			else 
-				sd_currentTask = sd_currentTask->next;
 
-		}
-	}
-	else 
+	sd_currentTask->current_thread->timeLeft --;
+	if(sd_currentTask->current_thread->timeLeft == 0) // The thread ran out of time, switch to the next one
 	{
-		if(sd_firstTask)
-		{
-			sd_currentTask = sd_firstTask;
-			
+		sd_currentTask->current_thread->timeLeft = sd_currentTask->current_thread->timeMax;
+		
+		sd_currentTask->current_thread = sd_currentTask->current_thread->next;
+		
+		if(!sd_currentTask->current_thread)
 			sd_currentTask->current_thread = sd_currentTask->main_thread;
-			sd_currentTask->current_thread->timeLeft = sd_currentTask->current_thread->timeMax;
-		}
+		
+		
+		// Now that the task has its next thread, switch to the next task and make it the current task
+		sd_currentTask = sd_currentTask->next;
+		
+		if(!sd_currentTask)
+			sd_currentTask = sd_firstTask;
 	}
 
+	
 	if(intr > 0)
 	{
 		outb(0x70, 0x0C);
@@ -406,21 +438,16 @@ ir_cpuState *sd_step(uint32_t intr, ir_cpuState *state)
 	
 	if(sd_currentTask && sd_currentTask->current_thread && sd_currentTask->current_thread->state)
 	{
-		if(st_isVerbose())
-		{
-			char temp[33];
-			sprintf(temp, "%i", sd_currentTask->pid);
-		
-			int pos = VD_SIZE_X - strlen(temp);
-			vd_writeString(pos, 0, temp, VD_COLOR_WHITE);
-		}
-			
 		gdt_setTSSEntry((uint32_t)(sd_currentTask->current_thread->state + 1), 1);
 		return sd_currentTask->current_thread->state;
 	}
 	
-	return state;
+	
+	return state; // Normally this point shouldn't be reached, and there is a small chance that it will return NULL and cause a kernel panic!
 }
+
+
+
 
 
 ir_cpuState *sd_kill(uint32_t pid)
@@ -482,6 +509,8 @@ uint32_t sys_getppid()
 	return sd_currentTask ? sd_currentTask->parent : SD_PID_INVALID;
 }
 
+
+// Debug process dump function
 void sd_printTasks()
 {
 	sd_task *task = sd_firstTask;
@@ -530,6 +559,7 @@ void sd_printTasks()
 }
 
 
+// Scheduler state
 void sd_enableScheduler()
 {
 	sd_enabled = true;
@@ -540,8 +570,9 @@ void sd_disableScheduler()
 	sd_enabled = false;
 }
 
-void kernelTask();
 
+// -------
+void kernelTask();
 int sd_init()
 {
 	cn_printf("Initializing scheduler...");

@@ -18,16 +18,15 @@
 
 
 #include "syscall.h"
-
-sys_syscall __exsyscall = NULL;
+sys_syscall syscall = NULL;
 
 void loadSyscall()
 {
-    if(!__exsyscall)
+    if(!syscall)
     {
         uintptr_t result;
 	   __asm__ volatile("int $0x31" : "=a" (result));
 	
-	   __exsyscall = (sys_syscall)result;
+	   syscall = (sys_syscall)result;
     }
 }

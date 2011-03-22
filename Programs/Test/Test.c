@@ -23,5 +23,5 @@ void _start()
 	loadSyscall();
 	
 	syscall(sys_print, "Hello World\n");
-	syscall(sys_sleep, 0);
+	syscall(sys_sleep);
 }

@@ -25,10 +25,8 @@
 #define sys_sleep 1
 
 typedef int32_t (*sys_syscall)(uint32_t type, ...);
-extern sys_syscall __exsyscall;
-
+extern sys_syscall syscall;
 
 extern void loadSyscall();
-#define syscall(type, ...) __exsyscall(type, __VA_ARGS__)
 
 #endif

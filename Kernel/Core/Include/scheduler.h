@@ -59,6 +59,11 @@ typedef struct sd_task
 #define SD_PID_INVALID UINT32_MAX
 #define SD_TID_INVALID UINT32_MAX
 
+#define SD_THREAD_PRIORITY_DEFAULT	1 // 3 scheduler cycles
+#define SD_THREAD_PRIORITY_BETTER	2 // 5 scheduler cycles
+#define SD_THREAD_PRIORITY_TOO_MUCH 10 // 21 scheduler cycles
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -66,9 +71,10 @@ extern "C" {
 extern uint32_t sd_spawnTask(void (*entry)());
 extern int sd_init();
 
-extern void sd_nameTask(char *name);
+extern void		sd_nameTask(char *name);
 extern uint32_t sd_attachThread(void (*entry)());
-extern int  sd_threadRunning(uint32_t threadId);
+extern int		sd_threadRunning(uint32_t threadId);
+extern void		sd_threadSetPriority(uint8_t priority); // Something between SD_THREAD_PRIORITY_DEFAULT and SD_THREAD_PRIORITY_TOO_MUCH
 
 extern sd_task *sd_taskWithPid(uint32_t pid);
 extern ir_cpuState *sd_kill(uint32_t pid);

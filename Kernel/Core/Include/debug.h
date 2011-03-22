@@ -20,25 +20,27 @@
 #ifndef _DEBUG_H_
 #define _DEBUG_H_
 
-typedef struct
+typedef enum
 {
-	char	file[512];
-	int		line;
-} db_debugInfo;
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-extern void	db_breakpointLong(char *file, int line);
-
-extern void				db_clearInfo();
-extern db_debugInfo		*db_getInfo();
-
-#define db_breakpoint(void) db_breakpointLong(__FILE__, __LINE__)
-
-#ifdef __cplusplus
-}
-#endif
+	DB_LEVEL_NONE,
 	
+	DB_LEVEL_INFORMATION,
+	DB_LEVEL_WARNING,
+	DB_LEVEL_ERROR,
+	DB_LEVEL_PANIC // Logs the message as syscall
+} DB_LOGGING_LEVEL;
+
+extern void db_setLoggingLevel(DB_LOGGING_LEVEL level);
+extern DB_LOGGING_LEVEL db_getLoggingLevel();
+
+extern void db_verboseLog(DB_LOGGING_LEVEL level, char *file, int line, char *format, ...);
+extern char *db_lastPathComponent(char *path); // Returns the last path component. eg: "/foo/bar/baz.file" -> "baz.file". Works with Windows and UNIX style paths
+// Ownership note: The returned pointer points to path + offset!
+
+#define db_log(...) db_verboseLog(DB_LEVEL_INFORMATION, __FILE__, __LINE__, __VA_ARGS__)
+#define db_logLevel(level, ...) db_verboseLog(level, __FILE__, __LINE__, __VA_ARGS__)
+
+#define db_conditionalLog(condition, ...) ((condition) ? db_verboseLog(DB_LEVEL_INFORMATION, __FILE__, __LINE__, __VA_ARGS__) : ((void) 0))
+#define db_conditionalLogLevel(level, condition, ...) ((condition) ? db_verboseLog(level, __FILE__, __LINE__, __VA_ARGS__) : ((void) 0))
+
 #endif

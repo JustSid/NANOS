@@ -94,8 +94,6 @@ void shell_main()
 			
 			while(sd_taskWithPid(pid) != NULL)
 				syscall(sys_sleep);
-			
-			cn_printf("\n");
 		}
 		else if(strcmp(sh_input, "cls") == 0)
 		{

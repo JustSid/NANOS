@@ -30,7 +30,7 @@ km_layout *km_createLayout(const char *name)
 	
 	if(temp)
 	{
-		temp->name = (char *)mm_alloc(strlen(name) * sizeof(char));
+		temp->name = (char *)mm_alloc((strlen(name) + 1) * sizeof(char));
 		if(!temp->name)
 		{
 			mm_free(temp);

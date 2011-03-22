@@ -38,7 +38,7 @@
 
 #define VersionMajor 0
 #define VersionMinor 2
-#define VersionPatch 5
+#define VersionPatch 8
 #define VersionCreate(major, minor, patch) (((major) << 16) | ((minor) << 8) | (patch))
 #define VersionCurrent VersionCreate(VersionMajor, VersionMinor, VersionPatch)
 
@@ -55,32 +55,35 @@ void boot(struct multiboot_info *bootinfo)
 	ir_disableInterrupts();
 	
 	// Load some basic components
-	if(mm_init(bootinfo) == 0)
+	if(mm_init(bootinfo) == 0) // Memory manager
 		panic("Error while initializing the memory manager!");
 	
-	if(ir_init() == 0)
+	if(ir_init() == 0) // Interrupt controller
 		panic("Error while initializing the interrupt handler!");
 	
-	if(st_init() == 0)
+	if(st_init() == 0) // System stuff (syscalls)
 		panic("Errow while initializing the system!");
 	
-	if(sd_init() == 0)
+	if(sd_init() == 0) // Scheduler and kernel task
 		panic("Error while initializing the scheduler!");
 	
-	ps_init();
-	km_init();
+	ps_init(); // PS/2 controller
+	km_init(); // Keyboard defintions
+	
 	
 	
 	// Load the multiboot modules
-	cn_printf("\nLoading %i modules\n", bootinfo->mbs_mods_count);
+	cn_printf("\nLoading %i module%s\n", bootinfo->mbs_mods_count, (bootinfo->mbs_mods_count == 1) ? "" : "s");
 	struct multiboot_module *modules = bootinfo->mbs_mods_addr;
 	
 	uint32_t i;
     for(i=0; i<bootinfo->mbs_mods_count; i++) 
 		ld_loadMultibootModule(&modules[i]);
+
 	
 	
-	// And here we go...
+	
+	// And here we go, lets let reality kick in...
 	cn_puts("\n\n");
 	ir_enableInterrupts();
 	

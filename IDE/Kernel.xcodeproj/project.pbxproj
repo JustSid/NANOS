@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E9040C481338B99E006E0D12 /* assert.h in Headers */ = {isa = PBXBuildFile; fileRef = E9040C471338B99E006E0D12 /* assert.h */; };
 		E96E1AD312DCB36000BA3E9D /* boot.S in Sources */ = {isa = PBXBuildFile; fileRef = E96E1AB512DCB36000BA3E9D /* boot.S */; };
 		E96E1AD412DCB36000BA3E9D /* entry.c in Sources */ = {isa = PBXBuildFile; fileRef = E96E1AB612DCB36000BA3E9D /* entry.c */; };
 		E96E1AD512DCB36000BA3E9D /* kernelTask.c in Sources */ = {isa = PBXBuildFile; fileRef = E96E1AB812DCB36000BA3E9D /* kernelTask.c */; };
@@ -66,6 +67,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		E9040C471338B99E006E0D12 /* assert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = assert.h; sourceTree = "<group>"; };
 		E96453CA122B16DB001A5754 /* NANOS */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = NANOS; sourceTree = BUILT_PRODUCTS_DIR; };
 		E96E1AB512DCB36000BA3E9D /* boot.S */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = boot.S; sourceTree = "<group>"; };
 		E96E1AB612DCB36000BA3E9D /* entry.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = entry.c; sourceTree = "<group>"; };
@@ -269,6 +271,7 @@
 		E9D4A97B127C26B8004A85C1 /* Include */ = {
 			isa = PBXGroup;
 			children = (
+				E9040C471338B99E006E0D12 /* assert.h */,
 				E9D4A97C127C26B8004A85C1 /* cmos.h */,
 				E9D4A97D127C26B8004A85C1 /* console.h */,
 				E9D4A97E127C26B8004A85C1 /* debug.h */,
@@ -343,6 +346,7 @@
 				E9B84525130AC4CF0038FA39 /* syscall.h in Headers */,
 				E9B8452B130AC6900038FA39 /* ELF.h in Headers */,
 				E9B84531130AC8ED0038FA39 /* loader.h in Headers */,
+				E9040C481338B99E006E0D12 /* assert.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
