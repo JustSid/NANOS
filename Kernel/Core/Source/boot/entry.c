@@ -38,9 +38,11 @@
 
 #define VersionMajor 0
 #define VersionMinor 2
-#define VersionPatch 8
+#define VersionPatch 9
 #define VersionCreate(major, minor, patch) (((major) << 16) | ((minor) << 8) | (patch))
 #define VersionCurrent VersionCreate(VersionMajor, VersionMinor, VersionPatch)
+
+extern void kernelTask();
 
 // High-Level boot entry
 void boot(struct multiboot_info *bootinfo)
@@ -81,11 +83,11 @@ void boot(struct multiboot_info *bootinfo)
 		ld_loadMultibootModule(&modules[i]);
 
 	
-	
-	
+
 	// And here we go, lets let reality kick in...
 	cn_puts("\n\n");
-	ir_enableInterrupts();
 	
-	while(1) {__asm__ volatile ("hlt");}
+	
+	ir_enableInterrupts();
+	kernelTask(); // Spin up the real kernel task, see scheduler.c for more informations
 }

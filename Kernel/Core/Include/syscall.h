@@ -26,8 +26,9 @@
 extern "C" {
 #endif
 
-#define sys_print 0
-#define sys_sleep 1
+#define sys_print  0
+#define sys_sleep  1
+#define sys_cursor 2
 
 #define SYSCALL_MEMBER 8
 #define SYSCALL_INVALID UINT32_MAX

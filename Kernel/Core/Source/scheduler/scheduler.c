@@ -36,10 +36,9 @@ static sd_task *sd_currentTask	= NULL;
 static bool		sd_threadDied	= false;
 static bool		sd_enabled		= true;
 
-static ir_cpuState *kernelState = NULL;
 void sd_threadEntry();
 
-sd_thread *sd_createThread(sd_task *task, void (*entry)(), int priority, uint16_t stackSize)
+sd_thread *sd_createThread(sd_task *task, void (*entry)(), uint8_t priority, uint16_t stackSize)
 {
 	if(!task || !entry || stackSize == 0)
 		return NULL;
@@ -80,8 +79,8 @@ sd_thread *sd_createThread(sd_task *task, void (*entry)(), int priority, uint16_
 		
 		thread->state->eflags = 0x200;		
 		
-		thread->timeMax		= 1 + (priority * 2);
-		thread->timeLeft	= thread->timeMax;
+		thread->priority	= priority;
+		thread->timeLeft	= 1 + (priority * 2);
 		thread->timeSleep	= 0;
 		
 		thread->entry	= entry;		
@@ -150,7 +149,7 @@ void sd_threadSetPriority(uint8_t priority)
 			priority = SD_THREAD_PRIORITY_DEFAULT;
 		
 		sd_thread *thread = sd_currentTask->current_thread;
-		thread->timeMax = 1 + (priority * 2);
+		thread->priority = priority;
 	}
 }
 
@@ -371,18 +370,6 @@ void sd_cleanUp()
 
 ir_cpuState *sd_step(uint32_t intr, ir_cpuState *state)
 {
-	static bool firstStep = false;
-	if(!firstStep)
-	{
-		memcpy(kernelState, state, sizeof(ir_cpuState));
-		
-		state = NULL;
-		sd_currentTask = sd_firstTask;
-		
-		firstStep = true;
-	}
-	
-	
 	if(!sd_enabled)
 	{
 		if(intr > 0)
@@ -393,7 +380,6 @@ ir_cpuState *sd_step(uint32_t intr, ir_cpuState *state)
 		
 		return state;
 	}
-	
 	
 	
 	
@@ -414,7 +400,7 @@ ir_cpuState *sd_step(uint32_t intr, ir_cpuState *state)
 	sd_currentTask->current_thread->timeLeft --;
 	if(sd_currentTask->current_thread->timeLeft == 0) // The thread ran out of time, switch to the next one
 	{
-		sd_currentTask->current_thread->timeLeft = sd_currentTask->current_thread->timeMax;
+		sd_currentTask->current_thread->timeLeft = 1 + (sd_currentTask->current_thread->priority * 2);
 		
 		sd_currentTask->current_thread = sd_currentTask->current_thread->next;
 		
@@ -573,16 +559,19 @@ void sd_disableScheduler()
 
 // -------
 void kernelTask();
+
 int sd_init()
 {
 	cn_printf("Initializing scheduler...");
-	kernelState = mm_alloc(sizeof(ir_cpuState));
-	
-	if(!kernelState)
-		return 0;
-	
+
 	if(sd_spawnTask(kernelTask) == SD_PID_INVALID || !ir_installInterruptHandler(sd_step, 0x28, 0x28))
 		return 0;
+	
+	sd_currentTask = sd_firstTask;
+	// The very first task is the kernel task, however, the sd_spawnTask() spins up an temporary ring 3 task. The kernel spins up the real kernel task by just calling the kernelTask()
+	// function in void boot(). Once the scheduler does its first step, it assumes that it comes right out of the real kernel task (or just a few calls before the kernel spins it up)
+	// the scheduler will overwrite the first tasks state with the ring 0 kernel task state.
+	
 	
 	cmos_appendRTCFlags(CMOS_RTC_FLAG_PERIODICINT);	
 	cn_printf("ok\n");

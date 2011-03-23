@@ -16,6 +16,7 @@
 //  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+#include "stdint.h"
 #include "console.h"
 #include "string.h"
 #include "interrupt.h"
@@ -23,8 +24,8 @@
 #include "stdio.h"
 #include "syscall.h"
 
-static int cn_screenPos_x = 0;
-static int cn_screenPos_y = 0;
+static uint8_t cn_screenPos_x = 0;
+static uint8_t cn_screenPos_y = 0;
 static bool cn_cursorVisible = true;
 
 char cn_textColor = VD_COLOR_LGRAY;
@@ -44,17 +45,9 @@ void cn_cls()
 void cn_setCursor(bool visible)
 {
 	cn_cursorVisible = visible;
-	
-	if(!cn_cursorVisible)
-	{
-		vd_setCursor(cn_screenPos_x, cn_screenPos_y + VD_SIZE_Y);
-	}
-	else 
-	{
-		vd_setCursor(cn_screenPos_x, cn_screenPos_y);
-	}
-
+	vd_setCursor(cn_screenPos_x, cn_screenPos_y + ((cn_cursorVisible) ? 0 : VD_SIZE_Y));
 }
+
 
 void cn_scrollLine()
 {
@@ -86,6 +79,9 @@ void cn_putc(char c)
 	vd_setAttribute(cn_screenPos_x, cn_screenPos_y, cn_textColor);
 	
 	cn_screenPos_x += 1;
+	
+	if(cn_cursorVisible)
+		vd_setCursor(cn_screenPos_x, cn_screenPos_y);
 }
 
 void cn_puts(char *string)
@@ -96,8 +92,6 @@ void cn_puts(char *string)
 		cn_putc(string[i]);
 		i++;
 	}
-	
-	vd_setCursor(cn_screenPos_x, cn_screenPos_y);
 }
 
 void cn_printf(const char *format, ...)
@@ -114,15 +108,16 @@ void cn_printf(const char *format, ...)
 
 void cn_delchar()
 {
-	cn_screenPos_x --;
-	
-	if(cn_screenPos_x < 0)
+	if(cn_screenPos_x > 0)
+	{
+		cn_screenPos_x --;
+	}
+	else 
 	{
 		cn_screenPos_x = 0;
-		cn_screenPos_y --;
 		
-		if(cn_screenPos_y < 0)
-			cn_screenPos_y = 0;
+		if(cn_screenPos_y > 0)
+			cn_screenPos_y --;
 	}
 	
 	vd_setChar(cn_screenPos_x, cn_screenPos_y, ' ');

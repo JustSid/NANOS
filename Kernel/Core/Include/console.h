@@ -65,6 +65,7 @@ extern void cn_scrollLine();
  @param visible true if the cursor should be visible, otherwise false
  **/
 extern void cn_setCursor(bool visible);
+extern void cn_updateCursor();
 
 /**
  * Deletes the character at the cursor position and shifts the cursor one character back

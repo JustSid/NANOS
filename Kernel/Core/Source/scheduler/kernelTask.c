@@ -27,5 +27,5 @@ void kernelTask()
 	sd_nameTask("krn.nanos.kernel_task");
 	sd_spawnTask(shell_main);
 	
-	while(1) {}
+	while(1) {__asm__ volatile ("hlt");}
 }

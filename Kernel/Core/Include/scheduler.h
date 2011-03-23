@@ -26,11 +26,10 @@
 
 typedef struct sd_thread
 {
-	int8_t		priority;
 	uint8_t		*stack;
 	
+	uint8_t		priority;
 	uint8_t		timeLeft;
-	uint8_t		timeMax;
 	uint16_t	timeSleep;
 	
 	uint8_t		id;

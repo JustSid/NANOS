@@ -30,7 +30,7 @@
 static char sh_lastKey = ' ';
 static kb_callback_map *sh_callback = NULL;
 
-static int sh_index = 0;
+static int  sh_index = 0;
 static char sh_input[255];
 
 void keydown(unsigned char input)
@@ -41,20 +41,34 @@ void keydown(unsigned char input)
 		{
 			cn_delchar();
 			
-			sh_index --;			
+			sh_index --;	
 			sh_input[sh_index] = '\0';
+			
+			sh_lastKey = ' ';
 		}
+		else 
+		{
+			sh_input[0]	= '\0';			
+			sh_lastKey  = ' ';
+		}
+
+		//cn_printf("%i: %s\n", sh_index, sh_input);
 		return;
 	}
 	
-	cn_putc(input);
-	sh_lastKey = (char)input;
 	
 	if(sh_index < 254)
 	{
+		cn_printf("%c", input);
+		sh_lastKey = (char)input;
+		
 		sh_input[sh_index] = input;
 		sh_input[sh_index + 1] = '\0';
 		sh_index ++;
+	}
+	else 
+	{
+		sh_lastKey = '\n';
 	}
 }
 
@@ -64,7 +78,7 @@ void shell_main()
 	sd_nameTask("krn.nanos.mishelle");
 	
 	for(i=0; i<80; i++)
-		cn_putc('-');
+		cn_printf("-");
 	
 	cn_printf("NANOS shell\nDon't panic!\nType \"help\" for a list of commands\n\n");
 	sh_callback = kb_addKeyboardHook();
