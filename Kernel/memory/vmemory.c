@@ -71,7 +71,11 @@ vmm_context *vmm_createContext()
 		}
 		else 
 		{
+			//uintptr_t page = vmm_getFreePage(context);
 			context->__kernelPage = context->__contextPage; // As there is no other context, we can safely assume that we are creating the kernels context.
+			//vmm_mapPage(context, (uintptr_t)vmm_kernelContext, page, false);
+			
+			//vmm_kernelContext = (vmm_context *)page;
 		}
 
     }
@@ -155,8 +159,11 @@ bool vmm_mapPage(vmm_context *context, uintptr_t virtAddress, uintptr_t physAddr
 		
 		// Avoid a deadlock
 		sd_mutexUnlock(&context->mutex);
-		vmm_mapPage(context, (uintptr_t)table, (uintptr_t)table, true); // Map the physical memory
-        sd_mutexLock(&context->mutex); // Lock the mutex again
+		//uintptr_t page = vmm_getFreePage(context);
+		//vmm_mapPage(context, (uintptr_t)table, page, true); // Map the physical memory
+		
+		//table = (uint32_t *)page;
+        sd_mutexLock(&context->mutex); // Lock the mutex again*/
 		
         memset(table, 0, 1024);
         context->pageDirectory[directoryIndex] = ((uint32_t)table) | flags;
@@ -182,8 +189,6 @@ bool vmm_mapPageRange(vmm_context *context, uintptr_t virtAddress, uintptr_t phy
 	size_t location = 0x0;
 	while(location < range)
 	{
-		cn_printf("Mapping %x", location);
-		
 		bool result = vmm_mapPage(context, virtAddress + location, physAddress + location, userspace);
 		if(!result)
 		{
@@ -267,12 +272,10 @@ void vmm_activateContext(vmm_context *context)
 
 int vmm_init()
 {
-	cn_puts("Test");
     vmm_kernelContext = vmm_createContext();
 	if(!vmm_kernelContext)
 		return 0;
 	
-	cn_puts("Test2");
 	uintptr_t start = (uintptr_t)&kernelBegin;
 	uintptr_t end	= (uintptr_t)&kernelEnd;
 	
@@ -280,28 +283,21 @@ int vmm_init()
 	pmm_heap	*heap = pmm_getHeapMap();
 	
 	
-	cn_puts("Context");
 	vmm_mapPageRange(vmm_kernelContext, (uintptr_t)vmm_kernelContext, (uintptr_t)vmm_kernelContext, sizeof(vmm_context), true); // Map the kernels virtual memory context
-	cn_puts("Heap");
 	vmm_mapPageRange(vmm_kernelContext, (uintptr_t)heap, (uintptr_t)heap, sizeof(pmm_heap), false); // Map the heap
 	
-	cn_puts("Kernel");
 	vmm_mapPageRange(vmm_kernelContext, start, start, kernelSize, false); // Map the kernel
-	cn_puts("Video");
 	vmm_mapPageRange(vmm_kernelContext, 0xB8000, 0xB8000, (25 * 80 * 2), false); // Map the video memory
 	
 	
 	
-	//vmm_mapPageRange(vmm_kernelContext, 0, 0, 4096 * 1024, false);
-	cn_puts("Activate");
+	vmm_mapPageRange(vmm_kernelContext, 0, 0, 4096 * 1024, false);
     vmm_activateContext(vmm_kernelContext);
-	
-	cn_puts("Activate 2");
+
 	uint32_t cr0;
     __asm__ volatile("mov %%cr0, %0" : "=r" (cr0));
     cr0 |= (1 << 31);
     __asm__ volatile("mov %0, %%cr0" : : "r" (cr0));
 	
-	cn_puts("Done");
 	return 1;
 }

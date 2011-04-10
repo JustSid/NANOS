@@ -36,7 +36,6 @@ pmm_heap *pmm_getHeapMap()
 
 int pmm_init(struct multiboot_info *bootinfo)
 {
-	cn_puts("FOOOO");
 	struct multiboot_mmap *mmapBegin	= bootinfo->mbs_mmap_addr;
 	struct multiboot_mmap *mmapEnd		= (void *)((uintptr_t)bootinfo->mbs_mmap_addr + bootinfo->mbs_mmap_length);
 	
@@ -78,7 +77,6 @@ int pmm_init(struct multiboot_info *bootinfo)
 		address += 0x1000;
 	}
 	
-	cn_puts("Bar");
 	pmm_mark(NULL, true);
 	return 1;
 }
