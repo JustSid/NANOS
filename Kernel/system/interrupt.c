@@ -127,24 +127,30 @@ ir_cpuState *ir_handleInterrupt(ir_cpuState *state)
 	while(handler)
 	{
 		if(state->intr >= handler->begin && state->intr <= handler->end)
-			returnState = handler->interruptHandle(state->intr, state);
+			returnState = handler->interruptHandle(state);
 		
 		handler = handler->next;
 	}
 	
 	if(returnState)
+	{
 		return returnState;
+	}
+	
+	
 	
 	char panicReason[256]; // Oh array, y u so large?
 	sprintf(panicReason, "Unhandled interrupt %i occured!", (unsigned int)state->intr);
 	panic(panicReason);
-	
-	return state;
+
+	return NULL;
 }
 
 
-ir_cpuState *ir_defaultHandler(uint32_t interrupt, ir_cpuState *state)
+ir_cpuState *ir_defaultHandler(ir_cpuState *state)
 {
+	uint32_t interrupt = state->intr;
+	
 	if(interrupt >= 0x28)
 		outb(0xa0, 0x20);
 	
@@ -152,8 +158,10 @@ ir_cpuState *ir_defaultHandler(uint32_t interrupt, ir_cpuState *state)
 	return state;
 }
 
-ir_cpuState *ir_exceptionHandler(uint32_t exception, ir_cpuState *state)
+ir_cpuState *ir_exceptionHandler(ir_cpuState *state)
 {	
+	uint32_t exception = state->intr;
+	
 	switch(exception)
 	{
 		case 0:
@@ -177,13 +185,26 @@ ir_cpuState *ir_exceptionHandler(uint32_t exception, ir_cpuState *state)
 			break;
 			
 		case 6:
+		{
 			cn_printf("Invalid Opcode in task %i.", sd_getPid());
+			
+			return sd_violentKill();
+		}
 			break;
 			
 		case 13:
 		{
 			int pid = sd_getPid();
-			cn_printf("General Protection Fault occured in %i (%s).\n", pid, sd_processWithPid(pid)->name);
+			cn_printf("General Protection Fault occurred in %i (%s).\n", pid, sd_processWithPid(pid)->name);
+			
+			return sd_violentKill();
+		}
+			break;
+			
+		case 15:
+		{
+			int pid = sd_getPid();
+			cn_printf("Segmentation Fault occurred in %i (%s).\n", pid, sd_processWithPid(pid)->name);
 			
 			return sd_violentKill();
 		}
@@ -203,6 +224,8 @@ ir_cpuState *ir_lastCPUState()
 {
 	return lastState;
 }
+
+
 
 int ir_init()
 {

@@ -52,6 +52,7 @@ typedef struct sd_thread
 	uint8_t	usedTicks;
 	uint8_t grantedTicks;
 	
+	uint32_t pid;
 	ir_cpuState *state;
 	
 	sd_threadPrivilege	privilege;

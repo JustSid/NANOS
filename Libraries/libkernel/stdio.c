@@ -1,6 +1,6 @@
 //
 //  stdio.c
-//  NANOS
+//  libkernel
 //
 //  Created by Sidney Just
 //  Copyright (c) 2011 by Sidney Just
@@ -17,6 +17,7 @@
 //
 
 #include "stdio.h"
+#include "stdlib.h"
 
 char _buffer[64];
 
@@ -177,6 +178,22 @@ int sprintf(char *dst, const char *format, ...)
 	
 	va_end(param);
 	
+	return written;
+}
+
+
+
+int printf(const char *format, ...)
+{
+	va_list param;
+	va_start(param, format);
+	
+	char temp[1024];
+	int written = vsprintf(temp, format, param);
+	
+	puts(temp);
+	
+	va_end(param);
 	return written;
 }
 

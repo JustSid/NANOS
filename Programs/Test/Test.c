@@ -16,12 +16,11 @@
 //  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#include "libkernel.h"
+#include <libkernel.h>
 
-void _start()
+int main(int argc, char *argv[])
 {
-	loadSyscall();
+	puts("Hello World\n");
 	
-	syscall(sys_print, "Hello World\n");
-	syscall(sys_sleep);
+	return 0;
 }

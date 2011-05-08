@@ -17,8 +17,12 @@
 //
 
 #include "keymap_def.h"
+#include "keyboard.h"
+
 #include "stdint.h"
 #include "console.h"
+#include "syscall.h"
+#include <scheduler/scheduler.h>
 
 static km_layout *layout_deDE = NULL;
 
@@ -289,12 +293,39 @@ void km_create_deDE()
 
 //static km_layout *layout_enEN = NULL;
 
+
+uint32_t km_keybardHookExec(ir_cpuState *state, ir_cpuState **returnState)
+{
+	sd_process *process = sd_getCurrentProcess();
+	if(process)
+	{
+		uint32_t mode = *((uint32_t *)(state->esp));
+		
+		if(mode == 0)
+		{
+			void *ptr = *((void **)(state->esp + 4));		
+			uint32_t size = *((uint32_t *)(state->esp + 8));
+			
+			kb_addKeyboardHook(process->pid, ptr, size);
+		}
+		else
+		{
+			kb_removeKeyboardHook(process->pid);
+		}
+	}
+	
+	return 0;
+}
+
 void km_init()
 {
-	cn_puts("Initializing keyboards...");
+	cn_printf("Initializing keyboards...");
 	
 	km_create_deDE();
 	km_setLayout(layout_deDE);
 	
-	cn_puts("ok\n");
+	uint32_t rKeyboard;
+	rKeyboard = sys_registerSyscall(sys_keyboard, km_keybardHookExec);
+	
+	cn_printf("ok\n");
 }

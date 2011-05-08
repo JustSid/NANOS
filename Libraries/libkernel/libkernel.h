@@ -20,6 +20,11 @@
 #define _LIBKERNEL_H_
 
 #include "stdint.h"
+#include "stdlib.h"
+#include "stdio.h"
+#include "string.h"
+
 #include "syscall.h"
+#include "process.h"
 
 #endif

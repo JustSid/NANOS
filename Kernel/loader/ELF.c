@@ -1,6 +1,6 @@
 //
-//  libkernel.h
-//  libkernel
+//  ELF.c
+//  NANOS
 //
 //  Created by Sidney Just
 //  Copyright (c) 2011 by Sidney Just
@@ -16,10 +16,10 @@
 //  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#ifndef _LIBKERNEL_H_
-#define _LIBKERNEL_H_
+#include "ELF.h"
 
-#include "stdint.h"
-#include "syscall.h"
-
-#endif
+char ld_isELFBinary(void *ptr)
+{
+	elf_header *header = (elf_header *)ptr;
+	return (header->magic == ELF_MAGIC);
+}

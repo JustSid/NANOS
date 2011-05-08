@@ -33,6 +33,135 @@ pmm_heap *pmm_getHeapMap()
 	return pmm_heapMap;
 }
 
+void pmm_mark(void *page, bool used)
+{
+	uintptr_t index = (uintptr_t)page / 4096;
+	
+	if(used)
+	{
+		pmm_heapMap->heap[index / 32] &= ~(1 << (index % 32));
+	}
+	else 
+	{
+		pmm_heapMap->heap[index / 32] |= (1 << (index % 32));
+	}
+	
+}
+
+void pmm_markPages(void *page, bool used, uint32_t pageCount)
+{
+	uint32_t i;
+	uintptr_t pagePtr = (uintptr_t)page;
+	
+	for(i=0; i<pageCount; i++)
+	{
+		pmm_mark((void *)pagePtr, used);
+		pagePtr += 0x1000;
+	}
+}
+
+
+bool pmm_checkPage(void *page)
+{
+	uintptr_t index = (uintptr_t)page / 4096;
+	return !(pmm_heapMap->heap[index / 32] & (1 << (index % 32)));
+}
+
+bool pmm_checkPages(void *page, uint32_t pageCount)
+{
+	uint32_t i;
+	uintptr_t pagePtr = (uintptr_t)page;
+	
+	for(i=0; i<pageCount; i++)
+	{
+		if(pmm_checkPage((void *)pagePtr))
+			return false;
+			
+		pagePtr += 0x1000;
+	}
+	
+	return true;
+}
+
+
+
+
+
+
+void *pmm_alloc()
+{
+	sd_mutexLock(&pmm_heapMap->mutex);
+	
+	int i, j;
+	for(i=0; i<MM_HEAPSIZE; i++)
+	{
+		if(pmm_heapMap->heap[i] != 0)
+		{
+			for(j=0; j<32; j++)
+			{
+				if(pmm_heapMap->heap[i] & (1 << j)) 
+				{
+                    pmm_heapMap->heap[i] &= ~(1 << j);
+					sd_mutexUnlock(&pmm_heapMap->mutex);
+					
+                    return (void *)((i * 32 + j) * 4096);
+                }
+			}
+		}
+	}
+	
+	sd_mutexUnlock(&pmm_heapMap->mutex);
+	return NULL;
+}
+
+void *pmm_allocPages(uint32_t pages)
+{
+	sd_mutexLock(&pmm_heapMap->mutex);
+	
+	int i, j;
+	for(i=0; i<MM_HEAPSIZE; i++)
+	{
+		if(pmm_heapMap->heap[i] != 0)
+		{
+			for(j=0; j<32; j++)
+			{
+				if(pmm_heapMap->heap[i] & (1 << j)) 
+				{
+					void *page = (void *)((i * 32 + j) * 4096);
+
+					if(pmm_checkPages(page, pages))
+					{
+						pmm_markPages(page, true, pages);
+
+						sd_mutexUnlock(&pmm_heapMap->mutex);
+						return page;
+					}
+					// TODO: Skip the next n pages to avoid double checking
+                }
+			}
+		}
+	}
+	
+	sd_mutexUnlock(&pmm_heapMap->mutex);
+	return NULL;
+}
+
+void pmm_free(void *page)
+{
+	sd_mutexLock(&pmm_heapMap->mutex);
+	pmm_mark(page, false);
+	sd_mutexUnlock(&pmm_heapMap->mutex);
+}
+
+void pmm_freePages(void *page, uint32_t pages)
+{
+	sd_mutexLock(&pmm_heapMap->mutex);
+	pmm_markPages(page, false, pages);
+	sd_mutexUnlock(&pmm_heapMap->mutex);
+}
+
+
+
 
 int pmm_init(struct multiboot_info *bootinfo)
 {
@@ -45,7 +174,6 @@ int pmm_init(struct multiboot_info *bootinfo)
 	// Initialize the heap map
 	memset(&pmm_heapMap->heap, 0, sizeof(MM_HEAPSIZE));
 	sd_mutexInit(&pmm_heapMap->mutex);
-	
 	
 	// Mark the default stuff
 	while(mmap < mmapEnd) 
@@ -79,56 +207,4 @@ int pmm_init(struct multiboot_info *bootinfo)
 	
 	pmm_mark(NULL, true);
 	return 1;
-}
-
-
-
-void pmm_mark(void *page, bool used)
-{
-	sd_mutexLock(&pmm_heapMap->mutex);	
-	uintptr_t index = (uintptr_t)page / 4096;
-	
-	if(used)
-	{
-		pmm_heapMap->heap[index / 32] &= ~(1 << (index % 32));
-	}
-	else 
-	{
-		pmm_heapMap->heap[index / 32] |= (1 << (index % 32));
-	}
-	
-	sd_mutexUnlock(&pmm_heapMap->mutex);
-}
-
-
-
-void *pmm_alloc()
-{
-	sd_mutexLock(&pmm_heapMap->mutex);
-	
-	int i, j;
-	for(i=0; i<MM_HEAPSIZE; i++)
-	{
-		if(pmm_heapMap->heap[i] != 0)
-		{
-			for(j=0; j<32; j++)
-			{
-				if(pmm_heapMap->heap[i] & (1 << j)) 
-				{
-                    pmm_heapMap->heap[i] &= ~(1 << j);
-					sd_mutexUnlock(&pmm_heapMap->mutex);
-					
-                    return (void *)((i * 32 + j) * 4096);
-                }
-			}
-		}
-	}
-	
-	sd_mutexUnlock(&pmm_heapMap->mutex);
-	return NULL;
-}
-
-void pmm_free(void *page)
-{
-	pmm_mark(page, false);
 }

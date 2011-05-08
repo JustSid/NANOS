@@ -74,43 +74,27 @@ idt_stub 46 // primary IDE/ATAPI/ATA
 idt_stub 47 // secondary IDE/ATAPI/ATA
 
 idt_stub 48 // Syscall
-idt_stub 49 // Request to map syscall
 
 
 // !---- Pre Handler ---- ! //
 // The pre handler gets called before our high level interrupt handler gets called. So we don't falsify the CPU state
 ir_preHandler:
-	// Push the current CPU state
-	push %ebp
-    push %edi
-    push %esi
-    push %edx
-    push %ecx
-    push %ebx
-    push %eax
+	pusha
 
-	// Reload the kernel data segment
 	mov $0x10, %ax
     mov %ax, %ds
     mov %ax, %es
 
     push %esp 
     call ir_handleInterrupt // Calls our high-level handler 
-    mov %eax, %esp // Switch the stack. We have switched the CPU state context, so we need to switch the stack too.
-
-	// Reloads the user data segment
+	add $4, %esp
+	
+    mov %eax, %esp
 	mov $0x23, %ax
     mov %ax, %ds
     mov %ax, %es
 
-	// Pop the state
-    pop %eax
-    pop %ebx
-    pop %ecx
-    pop %edx
-    pop %esi
-    pop %edi
-    pop %ebp
+	popa
 
-    add $8, %esp // Removes the error number from the stack.
+    add $8, %esp // Remove the error number from the stack.
     iret

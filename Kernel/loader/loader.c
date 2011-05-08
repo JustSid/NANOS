@@ -21,6 +21,7 @@
 
 #include <system/string.h>
 #include <system/console.h>
+#include <scheduler/scheduler.h>
 #include <memory/memory.h>
 
 static ld_image *ld_firstImage = NULL;
@@ -60,7 +61,7 @@ ld_image *ld_createVoidImage(const char *name)
 
 
 /**
- * Inserts a image into the linked list
+ * Inserts an image into the linked list
  **/
 void ld_insertImage(ld_image *image)
 {
@@ -109,15 +110,6 @@ ld_image *ld_imageWithName(const char *name)
 // ELF binaries
 // -------------------------------
 
-/**
- * Returns true if the given ptr points to an ELF binary
- **/
-char ld_isELFBinary(void *ptr)
-{
-	elf_header *header = (elf_header *)ptr;
-	return (header->magic == ELF_MAGIC) ? 1 : 0;
-}
-
 ld_image *ld_createELFImage(void *elfBinary, const char *name)
 {
 	if(!elfBinary || !ld_isELFBinary(elfBinary) || !name)
@@ -145,6 +137,8 @@ ld_image *ld_createELFImage(void *elfBinary, const char *name)
 		image->entry = (ld_entry)header->entry;
 		ld_insertImage(image);
 	}
+	
+	return image;
 }
 
 
@@ -159,7 +153,10 @@ ld_image *ld_createMultibootModuleImage(struct multiboot_module *module)
 	void		*start = module->mod_start;
 	
 	if(!name)
+	{
+		cn_printf("Could not load module, no name!");
 		return NULL;
+	}
 	
 	
 	cn_printf("Loading module \"%s\"...", name);
@@ -172,4 +169,43 @@ ld_image *ld_createMultibootModuleImage(struct multiboot_module *module)
 	
 	cn_printf("%s\n", (image) ? "ok" : "failed");
 	return image;
+}
+
+
+uint32_t ld_launchImage(const char *name)
+{
+	ld_image *image = ld_imageWithName(name);
+	if(image)
+		return sd_spawnProcess((sd_pentry)image->entry);
+	
+	return SD_PID_INVALID;
+}
+
+
+
+extern void pmm_markPages(void *page, bool used, uint32_t pageCount); // HACK!
+void ld_markImages(struct multiboot_info *bootinfo)
+{
+	struct multiboot_module *modules = bootinfo->mbs_mods_addr;
+	
+	uint32_t i;
+    for(i=0; i<bootinfo->mbs_mods_count; i++) 
+	{
+		struct multiboot_module *module = &modules[i];
+		
+		if(ld_isELFBinary(module->mod_start)) // We are only interested in ELF binaries atm
+		{
+			elf_header *header = (elf_header *)module->mod_start;
+			elf_program_header *pheader = (elf_program_header *)(((char *)header) + header->ph_offset);
+			
+			int j;
+			for(j=0; j<header->ph_entry_count; j++, pheader++) 
+			{
+				if(pheader->type != ELF_LOAD) 
+					continue;
+
+				pmm_markPages((void *)pheader->virt_addr, 1, 5); // !FIXME: This code assumes that every program part is only max 5 pages large!
+			}
+		}
+	}
 }

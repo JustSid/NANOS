@@ -44,6 +44,8 @@ typedef struct sd_process
 	bool ownedContext;
 	vmm_context *context;
 	
+	mm_heap *heap;
+	
 	bool died;
 	struct sd_process *next;
 } sd_process;

@@ -1,6 +1,6 @@
 //
-//  syscall.h
-//  libkernel
+//  string.h
+//  NANOS
 //
 //  Created by Sidney Just
 //  Copyright (c) 2011 by Sidney Just
@@ -16,17 +16,24 @@
 //  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#ifndef _SYSCALL_H_
-#define _SYSCALL_H_
+
+#ifndef _STRING_H_
+#define _STRING_H_
 
 #include "stdint.h"
 
-#define sys_print 0
-#define sys_sleep 1
+extern void *memcpy(void *dst0, const void *src0, size_t size);
+extern int   memcmp(const void *src0, const void *src1, size_t size);
+extern void *memset(void *dst0, int val, size_t size);
 
-typedef int32_t (*sys_syscall)(uint32_t type, ...);
-extern sys_syscall syscall;
+extern int strcmp(char *str1, char *str2);
+extern int strncmp(char *str1, char *str2, size_t len);
 
-extern void loadSyscall();
+extern size_t strlen(const char *str);
 
+extern char *strcpy(char *dst, const char *src);
+extern char *strncpy(char *dst, const char *src, size_t len);
+
+extern char *strcat(char *dst, const char *src);
+	
 #endif

@@ -69,6 +69,9 @@ void db_verboseLog(DB_LOGGING_LEVEL level, char *file, int line, char *format, .
 			return; // Unneeded but anyway...
 		}
 		
-		cn_printf("%s:%i: %s", db_lastPathComponent(file), line, temp);
+		
+		char temp2[1024];
+		sprintf(temp2, "%s:%i: %s", db_lastPathComponent(file), line, temp);
+		cn_puts(temp2);
 	}
 }

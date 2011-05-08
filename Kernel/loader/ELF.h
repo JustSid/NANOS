@@ -59,4 +59,9 @@ struct elf_program_header
 typedef struct elf_header elf_header;
 typedef struct elf_program_header elf_program_header;
 
+/**
+ * Returns true if the given ptr points to an ELF binary
+ **/
+char ld_isELFBinary(void *ptr);
+
 #endif

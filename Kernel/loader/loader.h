@@ -101,4 +101,8 @@ extern ld_image *ld_createELFImage(void *elfBinary, const char *name);
  **/
 extern ld_image *ld_createMultibootModuleImage(struct multiboot_module *module);
 
+extern uint32_t ld_launchImage(const char *name);
+
+extern void ld_markImages(struct multiboot_info *bootinfo);
+
 #endif

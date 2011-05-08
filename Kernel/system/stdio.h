@@ -19,7 +19,7 @@
 #ifndef _STDIO_H_
 #define _STDIO_H_
 
-#include "stdarg.h"
+#include "stdint.h"
 
 extern int vsprintf(char *str, const char *format, va_list arg);
 extern int sprintf(char *dst, const char *format, ...);

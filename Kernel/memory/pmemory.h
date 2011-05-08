@@ -38,9 +38,10 @@ typedef struct
 extern int pmm_init(struct multiboot_info *bootinfo);
 extern pmm_heap *pmm_getHeapMap();
 
-extern void pmm_mark(void *page, bool used);
 
 extern void *pmm_alloc();
+extern void *pmm_allocPages(uint32_t pages);
 extern void pmm_free(void *page);
+extern void pmm_freePages(void *page, uint32_t pages);
 
 #endif

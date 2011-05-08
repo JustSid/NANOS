@@ -38,14 +38,10 @@ void sd_mutexLock(sd_mutex *mutex)
 {
 	// Checks the mutexes state and sets a new one atomically!
 	__asm__ volatile("movb $1, %%cl;"
-					 "jmp tryLock;"
-					 "waitLock: pushl 4(%%ebp);"
-					 "pushl $1;"
-					 //"call _syscall;" // Syscall 1 is the syscall which resigns a threads resources!
-					 "addl $4, %%esp;"
 					 "tryLock: xorb %%al, %%al;"
 					 "lock cmpxchgb %%cl, (%0);"
-					 "jnz waitLock;" : : "D" (&mutex->locked) : "eax", "ecx");
+					 "jnz tryLock;" : : "D" (&mutex->locked) : "eax", "ecx");
+	
 
 	mutex->currentProcess = sd_getCurrentProcess();
 	mutex->currentThread  = sd_getCurrentThread();

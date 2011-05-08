@@ -25,12 +25,14 @@
 #include <memory/memory.h>
 #include <system/system.h>
 #include <system/string.h>
+#include <system/console.h>
+#include <system/keyboard.h>
 
 extern sd_thread *sd_createThread(sd_process *process, sd_pentry entry, sd_threadPriority priority, sd_threadPrivilege privilege);
 extern void sd_setCurrentProcess(sd_process *process);
 extern void sd_setFirstProcess(sd_process *process);
 
-// Returns a unique thread ID for the given process
+// Returns a unique process ID
 uint32_t sd_processUID()
 {
 	uint32_t uid = 0;
@@ -71,38 +73,37 @@ uint32_t sd_spawnProcessWithContext(sd_pentry entry, vmm_context *acontext)
 	if(!entry)
 		return SD_PID_INVALID;
 	
+	sd_disableScheduler();
 	
-	vmm_context *context;
 	
-	if(!acontext)
+	uint32_t processPid = SD_PID_INVALID;
+	mm_heap *heap = mm_createHeap(5*(32*4096), NULL); // 5 Mb heap
+	if(!heap)
 	{
-		context = vmm_createContext();
-		if(!context)
-			return SD_PID_INVALID;
+		db_logLevel(DB_LEVEL_WARNING, "Could not create process (no heap in place!)\n");
+		
+		sd_enableScheduler();
+		return SD_PID_INVALID;
 	}
-	else
-		context = acontext;
 	
-	
-	sd_process *process = (sd_process *)mm_alloc(sizeof(sd_process));
+	sd_process *process = (sd_process *)mm_heapAlloc(heap, sizeof(sd_process));
 	if(process)
 	{
-		process->name			= (char *)mm_allocContext(4 * sizeof(char), context);
-		process->identifier		= (char *)mm_allocContext(4 * sizeof(char), context);
-		process->context		= context;
-		process->ownedContext	= (acontext) ? false : true;
+		process->heap			= heap;
+		process->name			= (char *)mm_heapAlloc(heap, 4 * sizeof(char));
+		process->identifier		= (char *)mm_heapAlloc(heap, 4 * sizeof(char));
 		
-		if(!process->name || !process->identifier || !process->context)
+		if(!process->name || !process->identifier)
 		{
-			if(process->name)		mm_free(process->name);
-			if(process->identifier) mm_free(process->identifier);
+			if(process->name)		mm_heapFree(heap, process->name);
+			if(process->identifier) mm_heapFree(heap, process->identifier);
 			
-			mm_free(process);
-			
-			if(process->ownedContext)
-				vmm_destroyContext(process->context);
+			mm_heapFree(heap, process);
+			mm_destroyHeap(heap);
 			
 			db_logLevel(DB_LEVEL_WARNING, "Could not create process (out of memory!)\n");
+			
+			sd_enableScheduler();
 			return SD_PID_INVALID;
 		}
 		
@@ -116,22 +117,21 @@ uint32_t sd_spawnProcessWithContext(sd_pentry entry, vmm_context *acontext)
 		process->next		= NULL;
 		process->mainThread = NULL;
 		
+		
 		sd_createThread(process, entry, sd_threadPriorityNormal, sd_threadPrivilegeRing3);
 		if(!process->mainThread)
 		{
-			mm_free(process->name);
-			mm_free(process->identifier);
-			mm_free(process);
-			
-			if(process->ownedContext)
-				vmm_destroyContext(process->context);
+			mm_heapFree(heap, process->name);
+			mm_heapFree(heap, process->identifier);
+			mm_heapFree(heap, process);
+					
 			
 			db_logLevel(DB_LEVEL_WARNING, "Could not create process (out of memory!)\n");
+			sd_enableScheduler();
 			return SD_PID_INVALID;
 		}
 		
 		process->currentThread = process->mainThread;
-		
 		if(sd_getFirstProcess())
 		{
 			sd_process *pprocess = sd_getFirstProcess();
@@ -152,11 +152,12 @@ uint32_t sd_spawnProcessWithContext(sd_pentry entry, vmm_context *acontext)
 			sd_setCurrentProcess(process);
 		}
 		
-		db_conditionalLog(st_isVerbose(), "Created task: %i (t:%p, t:%p, s:%p)\n", process->pid, process, process->currentThread, process->currentThread->state);
-		return process->pid;
+		db_conditionalLog(st_isVerbose(), "Created process: %i (t:%p, t:%p, s:%p)\n", process->pid, process, process->currentThread, process->currentThread->state);
+		processPid = process->pid;
 	}
 	
-	return SD_PID_INVALID;
+	sd_enableScheduler();
+	return processPid;
 }
 
 
@@ -170,14 +171,8 @@ void sd_destroyProcess(sd_process *process)
 	}
 	
 	
-	vmm_context *context = (process->ownedContext) ? process->context : NULL;
-	
-	mm_free(process->name);
-	mm_free(process->identifier);
-	mm_free(process);
-	
-	if(context)
-		vmm_destroyContext(context);
+	kb_removeKeyboardHook(process->pid); // Remove a possible keyboard hook
+	mm_destroyHeap(process->heap); // Let the kernel reclaim the processes memory
 }
 
 
@@ -199,20 +194,19 @@ sd_process *sd_processWithPid(uint32_t pid)
 
 uint32_t sd_getPid()
 {
-	if(sd_getCurrentProcess())
-	{
-		return sd_getCurrentProcess()->pid;
-	}
+	sd_process *process = sd_getCurrentProcess();
+	if(process)
+		return process->pid;
 	
 	return SD_PID_INVALID;
 }
 
 uint32_t sd_getPpid()
 {
-	if(sd_getCurrentProcess())
-	{
-		return sd_getCurrentProcess()->ppid;
-	}
+	sd_process *process = sd_getCurrentProcess();
+	if(process)
+		return process->ppid;
+	
 	
 	return SD_PID_INVALID;
 }
@@ -221,17 +215,19 @@ uint32_t sd_getPpid()
 
 bool sd_setName(char *name)
 {
-	if(sd_getCurrentProcess())
+	sd_process *process = sd_getCurrentProcess();
+	
+	if(process)
 	{
 		size_t	size = strlen(name);
-		char*	temp = mm_alloc((size + 1) * sizeof(char));
+		char*	temp = mm_heapRealloc(process->heap, process->name, (size + 1) * sizeof(char));
 		
 		if(temp)
 		{
 			strcpy(temp, name);
+			process->name = temp;
 			
-			mm_free(sd_getCurrentProcess()->name);
-			sd_getCurrentProcess()->name = temp;
+			return true;
 		}
 	}
 	
@@ -240,17 +236,19 @@ bool sd_setName(char *name)
 
 bool sd_setIdentifier(char *identifier)
 {
-	if(sd_getCurrentProcess())
+	sd_process *process = sd_getCurrentProcess();
+	
+	if(process)
 	{
 		size_t	size = strlen(identifier);
-		char*	temp = mm_alloc((size + 1) * sizeof(char));
+		char*	temp = mm_heapRealloc(process->heap, process->identifier, (size + 1) * sizeof(char));
 		
 		if(temp)
 		{
 			strcpy(temp, identifier);
+			process->identifier = temp;
 			
-			mm_free(sd_getCurrentProcess()->identifier);
-			sd_getCurrentProcess()->identifier = temp;
+			return true;
 		}
 	}
 	

@@ -1,6 +1,6 @@
 //
-//  vmemory.h
-//  NANOS
+//  stdlib.c
+//  libkernel
 //
 //  Created by Sidney Just
 //  Copyright (c) 2011 by Sidney Just
@@ -16,44 +16,40 @@
 //  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#ifndef _VMEMORY_H_
-#define _VMEMORY_H_
+#include "stdlib.h"
+#include "syscall.h"
 
-#include <system/stdint.h>
-#include <system/stdbool.h>
-
-#include <scheduler/mutex.h>
-
-#define VMM_PAGETABLEFLAG_PRESENT    1
-#define VMM_PAGETABLEFLAG_WRITEABLE  2
-#define VMM_PAGETABLEFLAG_USERSPACE  4
-
-typedef struct
+void *malloc(size_t size)
 {
-	sd_mutex mutex;
-	uint32_t *pageDirectory;
-} vmm_context;
+	void *result = (void *)syscall1(sys_alloc, (uint32_t)size);
+	return result;
+}
+
+void *realloc(void *ptr, size_t size)
+{
+	void *result = (void *)syscall2(sys_realloc, (uint32_t)ptr, (uint32_t)size);
+	return result;
+}
+
+void free(void *ptr)
+{
+	syscall1(sys_free, (uint32_t)ptr);
+}
 
 
-extern int vmm_init();
+int puts(const char *string)
+{
+	syscall1(sys_print, (uint32_t)string);
+	return 0; // HACK!
+}
 
 
-extern vmm_context *vmm_getKernelContext();
-extern vmm_context *vmm_getCurrentContext();
+// Start stub
+extern int main(int argc, char *argv[]);
 
-extern vmm_context *vmm_createContext();
-extern void vmm_destroyContext(vmm_context *context);
-
-extern uintptr_t vmm_getFreePage(vmm_context *context);
-extern uintptr_t vmm_getFreePages(vmm_context *context, uint32_t pageCount);
-
-extern bool vmm_mapPage(vmm_context *context, uintptr_t virtAddress, uintptr_t physAddress, bool userspace);
-extern bool vmm_mapPageRange(vmm_context *context, uintptr_t virtAddress, uintptr_t physAddress, size_t range, bool userspace);
-
-extern bool vmm_unmapPage(vmm_context *context, uintptr_t virtAddress);
-
-extern uintptr_t vmm_getPhysicalAddress(vmm_context *context, uintptr_t virtAddress);
-
-extern void vmm_activateContext(vmm_context *context);
-
-#endif
+void _start()
+{
+	// TODO: Gather the default arguments from somewhere
+	main(0, NULL);
+	// TODO: Do something with the returned value!
+}

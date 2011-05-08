@@ -501,3 +501,6 @@ syscall.o
 *.o
 /IDE/build/
 /Programs/test.bin
+/Kernel/reference/
+shell.bin
+test.bin

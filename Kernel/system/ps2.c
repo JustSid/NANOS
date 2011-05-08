@@ -51,7 +51,7 @@ void ps_scanKey(unsigned char scanned)
 	}
 }
 
-ir_cpuState *ps_ir_callback(uint32_t interrupt, ir_cpuState *state)
+ir_cpuState *ps_ir_callback(ir_cpuState *state)
 {
 	unsigned char scancode = inb(0x60);
 	
@@ -119,7 +119,7 @@ ir_cpuState *ps_ir_callback(uint32_t interrupt, ir_cpuState *state)
 
 void ps_init()
 {
-	cn_puts("Initializing PS/2 controller...");
+	cn_printf("Initializing PS/2 controller...");
 	ir_installInterruptHandler(ps_ir_callback, 0x21, 0x21);
     
 	while((inb(0x64) & 2) != 0) {}
@@ -128,5 +128,5 @@ void ps_init()
 	while((inb(0x64) & 2) != 0) {}
 	outb(0x60 , 0x02);
 	
-	cn_puts("ok\n");
+	cn_printf("ok\n");
 }

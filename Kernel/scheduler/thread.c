@@ -22,7 +22,9 @@
 #include "scheduler.h"
 
 #include <system/debug.h>
+#include <system/console.h>
 #include <memory/memory.h>
+
 
 #define SD_THREAD_STACK_SIZE 4096
 
@@ -62,18 +64,20 @@ sd_thread *sd_createThread(sd_process *process, sd_tentry entry, sd_threadPriori
 	if(!process || !entry)
 		return NULL;
 	
-	sd_thread *thread = (sd_thread *)mm_allocContext(sizeof(sd_thread), process->context);
+	
+	sd_thread *thread = (sd_thread *)mm_heapAlloc(process->heap, sizeof(sd_thread));
 	if(thread)
 	{
-		thread->stack = (uint8_t *)mm_allocContext(SD_THREAD_STACK_SIZE * sizeof(uint8_t), process->context);
-		thread->state = (ir_cpuState *)mm_allocContext(sizeof(ir_cpuState), process->context);
+		thread->stack	= (uint8_t *)mm_heapAlloc(process->heap, SD_THREAD_STACK_SIZE * sizeof(uint8_t));
+		thread->state	= (ir_cpuState *)mm_heapAlloc(process->heap, sizeof(ir_cpuState));
+		thread->pid		= sd_threadUID(process);
 		
 		if(!thread->stack || !thread->state)
 		{
-			if(thread->stack) mm_free(thread->stack);
-			if(thread->state) mm_free(thread->state);
+			if(thread->stack) mm_heapFree(process->heap, thread->stack);
+			if(thread->state) mm_heapFree(process->heap, thread->state);
 			
-			mm_free(thread);
+			mm_heapFree(process->heap, thread);
 			db_logLevel(DB_LEVEL_WARNING, "Could not create thread for %i (out of memory!)\n", process->pid);
 		}
 		
@@ -88,19 +92,13 @@ sd_thread *sd_createThread(sd_process *process, sd_tentry entry, sd_threadPriori
 		thread->state->eip = (uint32_t)sd_threadEntry;
 		thread->state->esp = (uint32_t)thread->stack + SD_THREAD_STACK_SIZE;
 		
-		if(privilege == sd_threadPrivilegeRing0)
-		{
-			thread->state->cs	= 0x18;
-			thread->state->ss	= 0x20;
-		}
-		else
 		if(privilege == sd_threadPrivilegeRing3)
 		{
 			thread->state->cs	= 0x18 | 0x03;
 			thread->state->ss	= 0x20 | 0x03;				
 		}
 		
-		thread->state->eflags = 0x200;	
+		thread->state->eflags  = 0x200;
 		
 		thread->priority		= priority;
 		thread->usedTicks		= 0;
@@ -118,20 +116,18 @@ sd_thread *sd_createThread(sd_process *process, sd_tentry entry, sd_threadPriori
 		thread->entry	= entry;		
 		thread->next	= NULL;
 		
-		
 		if(process->mainThread)
 		{
-			sd_thread *tthread = process->mainThread;
-			while(tthread)
+			sd_thread *tempThread = process->mainThread;
+			while(tempThread)
 			{
-				if(!tthread->next)
+				if(!tempThread->next)
 				{
-					thread->id = sd_threadUID(process);
-					tthread->next = thread;
+					tempThread->next = thread;
 					break;
 				}
 				
-				tthread = thread->next;
+				tempThread = thread->next;
 			}
 		}
 		else 
@@ -146,9 +142,12 @@ sd_thread *sd_createThread(sd_process *process, sd_tentry entry, sd_threadPriori
 
 uint32_t sd_attachThread(sd_tentry entry, sd_threadPriority priority)
 {
-	if(sd_getCurrentProcess() && entry)
+	sd_process *process = sd_getCurrentProcess();
+	
+	if(process && entry)
 	{
-		sd_thread *thread = sd_createThread(sd_getCurrentProcess(), entry, priority, sd_getCurrentProcess()->currentThread->privilege);
+		sd_thread *thread = sd_createThread(process, entry, priority, process->currentThread->privilege);
+		
 		if(thread)
 			return thread->id;
 	}
@@ -159,12 +158,14 @@ uint32_t sd_attachThread(sd_tentry entry, sd_threadPriority priority)
 
 void sd_destroyThread(sd_thread *thread)
 {
+	sd_process *process = sd_processWithPid(thread->pid);
+	
 	if(thread && thread->died)
 	{
-		mm_free(thread->stack);
-		mm_free(thread->state);
+		mm_heapFree(process->heap, thread->stack);
+		mm_heapFree(process->heap, thread->state);
 		
-		mm_free(thread);
+		mm_heapFree(process->heap, thread);
 	}
 }
 
@@ -172,17 +173,21 @@ void sd_destroyThread(sd_thread *thread)
 
 sd_thread *sd_currentThread()
 {
-	if(sd_getCurrentProcess())
-		return sd_getCurrentProcess()->currentThread;
+	sd_process *process = sd_getCurrentProcess();
+	
+	if(process)
+		return process->currentThread;
 	
 	return NULL;
 }
 
 sd_thread *sd_threadWithId(uint32_t id)
 {
-	if(sd_getCurrentProcess())
+	sd_process *process = sd_getCurrentProcess();
+	
+	if(process)
 	{
-		sd_thread *thread = sd_getCurrentProcess()->mainThread;
+		sd_thread *thread = process->mainThread;
 		while(thread)
 		{
 			if(thread->id == id)
@@ -199,8 +204,8 @@ sd_thread *sd_threadWithId(uint32_t id)
 
 void sd_threadSetPriority(sd_threadPriority priority)
 {
-	if(sd_getCurrentProcess())
-	{
-		sd_getCurrentProcess()->currentThread->priority = priority;
-	}
+	sd_process *process = sd_getCurrentProcess();
+	
+	if(process)
+		process->currentThread->priority = priority;
 }

@@ -19,24 +19,23 @@
 #ifndef _KEYBOARD_H_
 #define _KEYBOARD_H_
 
+#include "stdint.h"
+
 typedef struct kb_callback_map
 {
-	void (*key_down)(unsigned char key);
+	uint32_t pid;
+	char *buffer;
+	size_t size;
+	uint32_t index;
 	
 	struct kb_callback_map *next;
 } kb_callback_map;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 extern void kb_keyDown(unsigned char key);
 
-extern kb_callback_map *kb_addKeyboardHook();
-extern void kb_removeKeyboardHook(kb_callback_map *rmap);
-
-#ifdef __cplusplus
-}
-#endif
+extern void kb_addKeyboardHook(uint32_t pid, void *buffer, size_t bufferSize);
+extern void kb_removeKeyboardHook(uint32_t pid);
+extern void kb_clearKeyboardHook(uint32_t pid);
 	
 #endif

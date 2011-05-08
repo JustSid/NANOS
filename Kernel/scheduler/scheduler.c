@@ -32,6 +32,8 @@
 #include <system/console.h>
 #include <system/system.h>
 #include <system/syscall.h>
+#include <system/keyboard.h>
+#include <video/video.h>
 
 #include <memory/memory.h>
 
@@ -78,15 +80,17 @@ void sd_cleanUp()
 				}
 				
 				
-				sd_thread *tthread = thread;
+				if(process->currentThread == thread)
+					process->currentThread = process->mainThread;
+				
+				sd_thread *diedThread = thread;
 				
 				thread = thread->next;
 				pthread->next = thread;
 				
-				sd_destroyThread(tthread);
+				sd_destroyThread(diedThread);
 				continue;
 			}
-			
 			
 			pthread = thread;
 			thread = thread->next;
@@ -94,33 +98,25 @@ void sd_cleanUp()
 		
 		
 		
-		
+		// Clean up the died process
 		if(process->died)
 		{
-			// Remove the dead process from the list
-			if(process == sd_firstProcess)
-				sd_firstProcess = process->next;
+			sd_process *diedProcess = process;
 			
-			
-			if(process == sd_currentProcess)
+			if(diedProcess == sd_firstProcess)
 			{
-				sd_currentProcess = process->next;
-				
-				if(!sd_currentProcess)
-					sd_currentProcess = sd_firstProcess;
+				process = sd_firstProcess = process->next;
+				pprocess = NULL;
 			}
-			
-			
-			sd_process *tprocess = process;
-			
-			process = process->next;
-			pprocess->next = process;
-			
-			if(process)
+			else 
+			{
 				process = process->next;
+				pprocess->next = process;
+			}
+
 			
-			db_conditionalLog(st_isVerbose(), "Task %i (%s) exited\n", tprocess->pid, tprocess->name);
-			sd_destroyProcess(tprocess);
+			db_conditionalLog(st_isVerbose(), "Task %i (%s) exited\n", diedProcess->pid, diedProcess->name);
+			sd_destroyProcess(diedProcess);
 			continue;
 		}
 		
@@ -133,8 +129,10 @@ void sd_cleanUp()
 
 
 
-ir_cpuState *sd_schedule(uint32_t intr, ir_cpuState *state)
+ir_cpuState *sd_schedule(ir_cpuState *state)
 {
+	uint32_t intr = (state) ? state->intr : 0;
+	
 	if(!sd_enabled)
 	{
 		if(intr > 0)
@@ -146,10 +144,9 @@ ir_cpuState *sd_schedule(uint32_t intr, ir_cpuState *state)
 		return state;
 	}
 
-	
 	sd_disableScheduler();
 	
-	sd_process *process = sd_currentProcess;
+	sd_process *process = sd_currentProcess;	
 	sd_cleanUp();
 	
 	if(process != sd_currentProcess)
@@ -178,15 +175,17 @@ ir_cpuState *sd_schedule(uint32_t intr, ir_cpuState *state)
 		if(!sd_currentProcess->currentThread)
 			sd_currentProcess->currentThread = sd_currentProcess->mainThread;
 		
+		
+		kb_clearKeyboardHook(sd_currentProcess->pid); // Reset the keyboards index
 		sd_currentProcess = sd_currentProcess->next;
 		
 		if(!sd_currentProcess)
 			sd_currentProcess = sd_firstProcess;
 	}
 	
-	sd_enableScheduler();
 	
-	if(intr > 0)
+	
+	if(intr == 0x28)
 	{
 		outb(0x70, 0x0C);
 		inb(0x71);
@@ -195,13 +194,15 @@ ir_cpuState *sd_schedule(uint32_t intr, ir_cpuState *state)
 	if(sd_currentProcess && sd_currentProcess->currentThread && sd_currentProcess->currentThread->state)
 	{
 		gdt_setTSSEntry((uint32_t)(sd_currentProcess->currentThread->state + 1), 1);
-		vmm_activateContext(sd_currentProcess->context);
+		//vmm_activateContext(sd_currentProcess->context);
 		
+		sd_enableScheduler();
 		return sd_currentProcess->currentThread->state;
 	}
 	
 	
-	return state; // Normally this point shouldn't be reached, and there is a small chance that it will return NULL and cause a kernel panic!
+	sd_enableScheduler();
+	return state; // Normally this point shouldn't be reached, but if it does, there is a small chance that it will return NULL and cause a kernel panic!
 }
 
 ir_cpuState *sd_violentKill() // Marks the current process as dead and purges it from the internal list, no questions asked
@@ -209,7 +210,7 @@ ir_cpuState *sd_violentKill() // Marks the current process as dead and purges it
 	if(sd_currentProcess)
 	{
 		sd_currentProcess->died = true;
-		return sd_schedule(0, NULL);
+		return sd_schedule(NULL);
 	}
 	
 	return NULL;
@@ -315,34 +316,31 @@ void sd_disableScheduler()
 
 
 // Syscalls
-// sys_sleep
-void sd_sleepExec(syscallEvent *event)
+uint32_t sd_sleepExec(ir_cpuState *state, ir_cpuState **returnState)
 {
 	if(sd_currentProcess)
 	{
 		sd_currentProcess->currentThread->wantsSleep = true;
 		
-		ir_cpuState *state = sd_schedule(0, event->cstate);
-		event->state = state;
+		ir_cpuState *newState = sd_schedule(state);
+		*returnState = newState;
 	}
+	
+	return 0;
 }
 
 
-// sys_kill
-void sd_killFill(syscallEvent *event, va_list args)
-{
-	event->member[0].int32_type = (int32_t)va_arg(args, uint32_t);
-}
 
-void sd_killExec(syscallEvent *event)
+uint32_t sd_killExec(ir_cpuState *state, ir_cpuState **returnState)
 {
-	uint32_t pid = (uint32_t)event->member[0].int32_type;
+	uint32_t pid = *((uint32_t *)(state->esp));
+
 	if(sd_currentProcess->pid == pid)
 	{
 		sd_currentProcess->died = true;
 		
-		ir_cpuState *state = sd_schedule(0, event->cstate);
-		event->state = state;
+		ir_cpuState *newState = sd_schedule(state);
+		*returnState = newState;
 	}
 	else 
 	{
@@ -359,6 +357,110 @@ void sd_killExec(syscallEvent *event)
 			process = process->next;
 		}
 	}
+	
+	return 0;
+}
+
+uint32_t sd_getInfoExec(ir_cpuState *state, ir_cpuState **returnState)
+{
+	uint32_t flag = *((uint32_t *)(state->esp));	
+	uint32_t pid = *((uint32_t *)(state->esp + 4));
+
+	sd_process *process = sd_processWithPid(pid);
+	if(process)
+	{
+		switch(flag)
+		{
+			case sys_getInfoFlagName:
+				return (uint32_t)process->name;
+				break;
+				
+			case sys_getInfoFlagIdentifier:
+				return (uint32_t)process->identifier;
+				break;
+				
+			case sys_getInfoFlagPid:
+				return process->pid;
+				break;
+				
+			case sys_getInfoFlagThreads:
+			{
+				uint32_t threadCount = 0;
+				sd_thread *thread = process->mainThread;
+				
+				while(thread)
+				{
+					threadCount ++;
+					thread = thread->next;
+				}
+				
+				return threadCount;
+			}
+				break;
+				
+			case sys_getInfoFlagMemory:
+			{
+				mm_heap *heap = process->heap;
+				return (uint32_t)heap->allocatedBytes;
+			}
+				break;
+				
+			case sys_getInfoFlagNextPid:
+			{
+				sd_process *next = process->next;
+				return (next) ? next->pid : SD_PID_INVALID;
+
+			}
+				break;
+				
+			default:
+				break;
+		}
+	}
+	
+	if(flag == sys_getInfoFlagPid)
+	{
+		// Special case
+		return (uint32_t)(sd_currentProcess) ? sd_currentProcess->pid : SD_PID_INVALID;
+	}
+	
+	return 0;
+}
+
+uint32_t sd_setInfoExec(ir_cpuState *state, ir_cpuState **returnState)
+{
+	uint32_t flag = *((uint32_t *)(state->esp));
+	uint32_t pid = *((uint32_t *)(state->esp + 4));
+
+	sd_process *process = sd_processWithPid(pid);
+	if(process)
+	{
+		bool result = false;
+		
+		switch(flag) 
+		{
+			case sys_setInfoFlagName:
+			{
+				char *string = *((char **)(state->esp + 8));
+				result = sd_setName(string);
+			}
+				break;
+				
+			case sys_setInfoFlagIdentifier:
+			{
+				char *string = *((char **)(state->esp + 8));
+				result = sd_setIdentifier(string);
+			}
+				break;
+				
+			default:
+				break;
+		}
+		
+		return !result; // 0 means success, 1 means failure
+	}
+	
+	return -1;
 }
 
 
@@ -374,10 +476,12 @@ int sd_init()
 	if(sd_spawnProcessWithContext(kernelTask, vmm_getKernelContext()) == SD_PID_INVALID || !ir_installInterruptHandler(sd_schedule, 0x28, 0x28))
 		return 0;
 	
-	uint32_t sSleep, sKill;
+	uint32_t sSleep, sKill, rGetInfo, rSetInfo;
 	
-	sSleep  = sys_registerSyscall(sys_sleep, NULL, sd_sleepExec);
-	sKill	= sys_registerSyscall(sys_kill, sd_killFill, sd_killExec);
+	sSleep		= sys_registerSyscall(sys_sleep, sd_sleepExec);
+	sKill		= sys_registerSyscall(sys_kill, sd_killExec);
+	rGetInfo	= sys_registerSyscall(sys_getInfo, sd_getInfoExec);
+	rSetInfo	= sys_registerSyscall(sys_setInfo, sd_setInfoExec);
 	
 	if(sSleep == SYSCALL_INVALID || sKill == SYSCALL_INVALID)
 		return 0;

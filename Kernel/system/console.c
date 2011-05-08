@@ -106,7 +106,7 @@ void cn_printf(const char *format, ...)
 	char temp[1024];
 	vsprintf(temp, format, param);
 	
-	syscall(sys_print, temp);
+	cn_puts(temp);
 	va_end(param);
 }
 

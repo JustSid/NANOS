@@ -20,81 +20,27 @@
 #include "syscall.h"
 #include "string.h"
 #include "console.h"
-#include <memory/memory.h>
 #include "interrupt.h"
 
+#include <memory/memory.h>
+#include <loader/loader.h>
 #include <scheduler/scheduler.h>
 
 typedef struct sys_syscall
 {
 	uint32_t id;
-	
-	sys_fillSyscall fill;
-	sys_execSyscall exec;
+	sys_execSyscall callback;
 	
 	struct sys_syscall *next;
 } sys_syscall;
 
 
-static syscallEvent sys_event;
 static sys_syscall *sys_first   = NULL;
 static sys_syscall *sys_current = NULL; // General purpose iteration variable
 
-ir_cpuState *syscallEx(uint32_t interrupt, ir_cpuState *state)
-{	
-	#pragma unused(interrupt)
-	
-	if(sys_current)
-	{
-		sys_event.cstate = state;
-		sys_current->exec(&sys_event);
-		
-		if(sys_event.state)
-			return sys_event.state;
-	}
-	
-	return state;
-}
-
-
-int32_t syscall(uint32_t type, ...)
+uint32_t sys_registerSyscall(uint32_t type, sys_execSyscall callback)
 {
-	memset(&sys_event, 0, sizeof(syscallEvent));
-	
-	sys_current = sys_first;
-	while(sys_current)
-	{
-		if(sys_current->id == type)
-			break;
-		
-		sys_current = sys_current->next;
-	}
-	
-	if(sys_current)
-	{
-		if(sys_current->fill)
-		{
-			va_list args;
-			va_start(args, type);
-			
-			sys_current->fill(&sys_event, args);
-			
-			va_end(args);
-		}
-		
-		sys_event.pid  = sd_getPid();
-		sys_event.type = type;
-		
-		__asm__ volatile("int $0x30");
-		return sys_event.retVal;
-	}
-	
-	return -1;
-}
-
-uint32_t sys_registerSyscall(uint32_t type, sys_fillSyscall fill, sys_execSyscall exec)
-{
-	if(!exec)
+	if(!callback)
 		return SYSCALL_INVALID;
 	
 	if(type == SYSCALL_INVALID)
@@ -114,19 +60,19 @@ uint32_t sys_registerSyscall(uint32_t type, sys_fillSyscall fill, sys_execSyscal
 		sys_current = sys_current->next;
 	}
 	
+	
 	sys_current = NULL;
 	if(type == SYSCALL_INVALID)
 		return SYSCALL_INVALID;
 	
-	sys_syscall *tsyscall = mm_alloc(sizeof(sys_syscall));
+	sys_syscall *tsyscall = mm_heapAlloc(mm_kernelHeap(), sizeof(sys_syscall));
 	if(!tsyscall)
 		return SYSCALL_INVALID;
 	
-	tsyscall->id	= type;
-	tsyscall->next	= NULL;
+	tsyscall->id		= type;
+	tsyscall->next		= NULL;
+	tsyscall->callback	= callback;
 	
-	tsyscall->fill = fill;
-	tsyscall->exec = exec;
 	
 	if(sys_first)
 	{
@@ -152,47 +98,167 @@ uint32_t sys_registerSyscall(uint32_t type, sys_fillSyscall fill, sys_execSyscal
 
 
 
-
-ir_cpuState *mapSyscall(uint32_t interrupt, ir_cpuState *state)
+ir_cpuState *syscallEx(ir_cpuState *state)
 {
-	#pragma unused(interrupt)
+	uint32_t retVal = 0;
+	uint32_t call = state->eax;
 	
-	state->eax = (uint32_t)&syscall;
-	return state;
-}
-
-
-
-// Default syscalls
-void sys_printFill(syscallEvent *event, va_list args)
-{
-	event->member[0].pointer_type = va_arg(args, char *);
-}
-
-void sys_printExec(syscallEvent *event)
-{
-	char *string = event->member[0].pointer_type;
-	if(string)
+	ir_cpuState *returnState = state;
+	
+	sys_current = sys_first;
+	while(sys_current)
 	{
-		cn_puts(string);
-		event->retVal = 0;
+		if(sys_current->id == call)
+		{
+			retVal = sys_current->callback(state, &returnState);
+			break;
+		}
+		
+		sys_current = sys_current->next;
 	}
-	else
-		event->retVal = -1;
+	
+	state->eax = retVal;
+	return returnState;
 }
 
 
-// --
+
+
+uint32_t syscall0(uint32_t type)
+{
+	uint32_t retVal;
+	
+	__asm__ volatile("mov %1, %%eax;"
+					 "int $0x30;" : "=a" (retVal) : "r" (type));
+	
+	return retVal;
+}
+
+uint32_t syscall1(uint32_t type, uint32_t arg1)
+{
+	uint32_t retVal = 0;
+	
+	__asm__ volatile("pushl %2;"
+					 "movl %1, %%eax;"
+					 "int $0x30;"
+					 "add $0x4, %%esp;" : "=a" (retVal) : "r" (type), "r" (arg1));
+	
+	return retVal;
+}
+
+uint32_t syscall2(uint32_t type, uint32_t arg1, uint32_t arg2)
+{
+	uint32_t retVal = 0;
+	
+	__asm__ volatile("pushl %3;"
+					 "pushl %2;"
+					 "movl %1, %%eax;"
+					 "int $0x30;"
+					 "add $0x8, %%esp;" : "=a" (retVal) : "r" (type), "r" (arg1), "r" (arg2));
+	
+	return retVal;
+}
+
+uint32_t syscall3(uint32_t type, uint32_t arg1, uint32_t arg2, uint32_t arg3)
+{
+	uint32_t retVal = 0;
+	
+	__asm__ volatile("pushl %4;"
+					 "pushl %3;"
+					 "pushl %2;"
+					 "movl %1, %%eax;"
+					 "int $0x30;"
+					 "add $0xC, %%esp;" : "=a" (retVal) : "r" (type), "r" (arg1), "r" (arg2), "r" (arg3));
+	
+	return retVal;
+}
+
+
+uint32_t sys_printExec(ir_cpuState *state, ir_cpuState **returnState)
+{
+	char *string = *(char **)(state->esp);
+	cn_puts(string);
+	
+	return 0;
+}
+
+uint32_t sys_allocExec(ir_cpuState *state, ir_cpuState **returnState)
+{
+	sd_process *process = sd_getCurrentProcess();
+	size_t size = *((size_t *)(state->esp));
+	
+	void *result = mm_heapAlloc(process->heap, size);
+	return (uint32_t)result;
+}
+
+uint32_t sys_reallocExec(ir_cpuState *state, ir_cpuState **returnState)
+{
+	sd_process *process = sd_getCurrentProcess();
+	
+	void	*ptr = *(void **)(state->esp);
+	size_t	size = *((size_t *)(state->esp + 4));
+	
+	
+	void *result = mm_heapRealloc(process->heap, ptr, size);
+	return (uint32_t)result;
+}
+
+uint32_t sys_freeExec(ir_cpuState *state, ir_cpuState **returnState)
+{
+	sd_process *process = sd_getCurrentProcess();
+	void *ptr = *(void **)(state->esp);
+	
+	mm_heapFree(process->heap, ptr);
+	return 0;
+}
+
+uint32_t sys_execExec(ir_cpuState *state, ir_cpuState **returnState)
+{
+	sd_pentry entry = *(sd_pentry *)(state->esp);
+	sd_spawnProcess(entry);
+	
+	return 0;
+}
+
+uint32_t sys_threadExec(ir_cpuState *state, ir_cpuState **returnState)
+{
+	sd_tentry entry = *(sd_tentry *)(state->esp);
+	return sd_attachThread(entry, sd_threadPriorityNormal);
+}
+
+uint32_t sys_processExec(ir_cpuState *state, ir_cpuState **returnState)
+{
+	char *name = *(char **)(state->esp);
+	return ld_launchImage(name);
+}
+
+uint32_t sys_clsExec(ir_cpuState *state, ir_cpuState **returnState)
+{
+	cn_cls();
+	return 0;
+}
+
+
 
 int sc_init()
 {
-	if(ir_installInterruptHandler(syscallEx, 0x30, 0x30) != 1 || ir_installInterruptHandler(mapSyscall, 0x31, 0x31) != 1)
+	if(ir_installInterruptHandler(syscallEx, 0x30, 0x30) != 1)
 		return 0;
 	
-	uint32_t rPrint;	
-	rPrint = sys_registerSyscall(sys_print, sys_printFill, sys_printExec);
+	uint32_t rPrint, rAlloc, rRealloc, rFree, rExec, rThread, rProcess, rCls;	
 	
-	if(rPrint == SYSCALL_INVALID)
+	rPrint		= sys_registerSyscall(sys_print, sys_printExec);
+	rAlloc		= sys_registerSyscall(sys_alloc, sys_allocExec);
+	rRealloc	= sys_registerSyscall(sys_realloc, sys_reallocExec);
+	rFree		= sys_registerSyscall(sys_free, sys_freeExec);
+	rExec		= sys_registerSyscall(sys_exec, sys_execExec);
+	rThread		= sys_registerSyscall(sys_thread, sys_threadExec);
+	rProcess	= sys_registerSyscall(sys_process, sys_processExec);
+	rCls		= sys_registerSyscall(sys_cls, sys_clsExec);
+	
+	if(rPrint == SYSCALL_INVALID || rAlloc == SYSCALL_INVALID || rRealloc == SYSCALL_INVALID || 
+	   rFree == SYSCALL_INVALID || rFree == SYSCALL_INVALID || rExec == SYSCALL_INVALID || 
+	   rThread == SYSCALL_INVALID || rProcess == SYSCALL_INVALID || rCls == SYSCALL_INVALID)
 		return 0;
 	
 	return 1;

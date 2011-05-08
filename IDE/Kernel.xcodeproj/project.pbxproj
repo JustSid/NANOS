@@ -7,19 +7,31 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E911B49D1375B9A4005316A9 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = E911B49A1375B9A4005316A9 /* main.c */; };
+		E911B49E1375B9A4005316A9 /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = E911B49B1375B9A4005316A9 /* Makefile */; };
+		E911B4C51375C9C8005316A9 /* process.h in Headers */ = {isa = PBXBuildFile; fileRef = E911B4C31375C9C8005316A9 /* process.h */; };
+		E911B4C61375C9C8005316A9 /* process.c in Sources */ = {isa = PBXBuildFile; fileRef = E911B4C41375C9C8005316A9 /* process.c */; };
+		E911B4DB1375CC6C005316A9 /* stdio.c in Sources */ = {isa = PBXBuildFile; fileRef = E911B4D91375CC6C005316A9 /* stdio.c */; };
+		E911B4DC1375CC6C005316A9 /* stdio.h in Headers */ = {isa = PBXBuildFile; fileRef = E911B4DA1375CC6C005316A9 /* stdio.h */; };
+		E911B4E31375CDAE005316A9 /* stdarg.h in Headers */ = {isa = PBXBuildFile; fileRef = E911B4E21375CDAE005316A9 /* stdarg.h */; };
+		E911B4F51375CF1C005316A9 /* string.c in Sources */ = {isa = PBXBuildFile; fileRef = E911B4F31375CF1C005316A9 /* string.c */; };
+		E911B4F61375CF1C005316A9 /* string.h in Headers */ = {isa = PBXBuildFile; fileRef = E911B4F41375CF1C005316A9 /* string.h */; };
 		E914F245133BD5C80014A480 /* libkernel.h in Headers */ = {isa = PBXBuildFile; fileRef = E914F232133BD5C80014A480 /* libkernel.h */; };
 		E914F246133BD5C80014A480 /* stdint.h in Headers */ = {isa = PBXBuildFile; fileRef = E914F233133BD5C80014A480 /* stdint.h */; };
 		E914F247133BD5C80014A480 /* syscall.c in Sources */ = {isa = PBXBuildFile; fileRef = E914F234133BD5C80014A480 /* syscall.c */; };
 		E914F248133BD5C80014A480 /* syscall.h in Headers */ = {isa = PBXBuildFile; fileRef = E914F235133BD5C80014A480 /* syscall.h */; };
-		E914F24B133BD5C80014A480 /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = E914F238133BD5C80014A480 /* Makefile */; };
-		E914F24C133BD5C80014A480 /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = E914F23A133BD5C80014A480 /* Makefile */; };
 		E914F252133BD5C80014A480 /* Test.c in Sources */ = {isa = PBXBuildFile; fileRef = E914F242133BD5C80014A480 /* Test.c */; };
+		E9339F9F13729BDB00B0050B /* stdlib.h in Headers */ = {isa = PBXBuildFile; fileRef = E9339F9D13729BDB00B0050B /* stdlib.h */; };
+		E9339FA013729BDB00B0050B /* stdlib.c in Sources */ = {isa = PBXBuildFile; fileRef = E9339F9E13729BDB00B0050B /* stdlib.c */; };
 		E94A05D3133D5FC300A8A08B /* pmemory.h in Headers */ = {isa = PBXBuildFile; fileRef = E94A05D1133D5FC300A8A08B /* pmemory.h */; };
 		E94A05D4133D5FC400A8A08B /* pmemory.c in Sources */ = {isa = PBXBuildFile; fileRef = E94A05D2133D5FC300A8A08B /* pmemory.c */; };
 		E94A05D7133D668800A8A08B /* vmemory.h in Headers */ = {isa = PBXBuildFile; fileRef = E94A05D5133D668800A8A08B /* vmemory.h */; };
 		E94A05D8133D668800A8A08B /* vmemory.c in Sources */ = {isa = PBXBuildFile; fileRef = E94A05D6133D668800A8A08B /* vmemory.c */; };
 		E94A05DB133D6D1D00A8A08B /* memory.h in Headers */ = {isa = PBXBuildFile; fileRef = E94A05D9133D6D1D00A8A08B /* memory.h */; };
 		E94A05DC133D6D1D00A8A08B /* memory.c in Sources */ = {isa = PBXBuildFile; fileRef = E94A05DA133D6D1D00A8A08B /* memory.c */; };
+		E96A0FBF1375372B001149EB /* ELF.c in Sources */ = {isa = PBXBuildFile; fileRef = E96A0FBE1375372B001149EB /* ELF.c */; };
+		E96A0FC213754578001149EB /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = E96A0FC013754578001149EB /* Makefile */; };
+		E96A0FC413754590001149EB /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = E96A0FC313754590001149EB /* Makefile */; };
 		E979BF2C1347E49D002F4390 /* doxygen.h in Headers */ = {isa = PBXBuildFile; fileRef = E979BF2B1347E49D002F4390 /* doxygen.h */; };
 		E988E138133CAD4C009A4C8E /* boot.S in Sources */ = {isa = PBXBuildFile; fileRef = E988E0E3133CAD4B009A4C8E /* boot.S */; };
 		E988E139133CAD4C009A4C8E /* entry.c in Sources */ = {isa = PBXBuildFile; fileRef = E988E0E4133CAD4B009A4C8E /* entry.c */; };
@@ -35,7 +47,6 @@
 		E988E146133CAD4C009A4C8E /* scheduler.h in Headers */ = {isa = PBXBuildFile; fileRef = E988E0F5133CAD4B009A4C8E /* scheduler.h */; };
 		E988E148133CAD4C009A4C8E /* thread.c in Sources */ = {isa = PBXBuildFile; fileRef = E988E0F7133CAD4B009A4C8E /* thread.c */; };
 		E988E149133CAD4C009A4C8E /* thread.h in Headers */ = {isa = PBXBuildFile; fileRef = E988E0F8133CAD4B009A4C8E /* thread.h */; };
-		E988E14A133CAD4C009A4C8E /* shell.c in Sources */ = {isa = PBXBuildFile; fileRef = E988E0FA133CAD4B009A4C8E /* shell.c */; };
 		E988E14C133CAD4C009A4C8E /* assert.h in Headers */ = {isa = PBXBuildFile; fileRef = E988E0FD133CAD4B009A4C8E /* assert.h */; };
 		E988E14D133CAD4C009A4C8E /* cmos.c in Sources */ = {isa = PBXBuildFile; fileRef = E988E0FE133CAD4B009A4C8E /* cmos.c */; };
 		E988E14E133CAD4C009A4C8E /* cmos.h in Headers */ = {isa = PBXBuildFile; fileRef = E988E0FF133CAD4B009A4C8E /* cmos.h */; };
@@ -78,14 +89,23 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		E911B49A1375B9A4005316A9 /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		E911B49B1375B9A4005316A9 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		E911B49C1375B9A4005316A9 /* Makefile_ld */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Makefile_ld; sourceTree = "<group>"; };
+		E911B4C31375C9C8005316A9 /* process.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = process.h; sourceTree = "<group>"; };
+		E911B4C41375C9C8005316A9 /* process.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = process.c; sourceTree = "<group>"; };
+		E911B4D91375CC6C005316A9 /* stdio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = stdio.c; sourceTree = "<group>"; };
+		E911B4DA1375CC6C005316A9 /* stdio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stdio.h; sourceTree = "<group>"; };
+		E911B4E21375CDAE005316A9 /* stdarg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stdarg.h; sourceTree = "<group>"; };
+		E911B4F31375CF1C005316A9 /* string.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = string.c; sourceTree = "<group>"; };
+		E911B4F41375CF1C005316A9 /* string.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = string.h; sourceTree = "<group>"; };
 		E914F232133BD5C80014A480 /* libkernel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libkernel.h; sourceTree = "<group>"; };
 		E914F233133BD5C80014A480 /* stdint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stdint.h; sourceTree = "<group>"; };
 		E914F234133BD5C80014A480 /* syscall.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = syscall.c; sourceTree = "<group>"; };
 		E914F235133BD5C80014A480 /* syscall.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = syscall.h; sourceTree = "<group>"; };
-		E914F238133BD5C80014A480 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
-		E914F23A133BD5C80014A480 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
-		E914F23B133BD5C80014A480 /* Makefile_ld */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Makefile_ld; sourceTree = "<group>"; };
 		E914F242133BD5C80014A480 /* Test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Test.c; sourceTree = "<group>"; };
+		E9339F9D13729BDB00B0050B /* stdlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stdlib.h; sourceTree = "<group>"; };
+		E9339F9E13729BDB00B0050B /* stdlib.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = stdlib.c; sourceTree = "<group>"; };
 		E94A05D1133D5FC300A8A08B /* pmemory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pmemory.h; sourceTree = "<group>"; };
 		E94A05D2133D5FC300A8A08B /* pmemory.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = pmemory.c; sourceTree = "<group>"; };
 		E94A05D5133D668800A8A08B /* vmemory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vmemory.h; sourceTree = "<group>"; };
@@ -93,6 +113,15 @@
 		E94A05D9133D6D1D00A8A08B /* memory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = memory.h; sourceTree = "<group>"; };
 		E94A05DA133D6D1D00A8A08B /* memory.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = memory.c; sourceTree = "<group>"; };
 		E96453CA122B16DB001A5754 /* NANOS */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = NANOS; sourceTree = BUILT_PRODUCTS_DIR; };
+		E96A0FBE1375372B001149EB /* ELF.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ELF.c; sourceTree = "<group>"; };
+		E96A0FC013754578001149EB /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		E96A0FC113754578001149EB /* Makefile_ld */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Makefile_ld; sourceTree = "<group>"; };
+		E96A0FC313754590001149EB /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		E96A0FC513754F0D001149EB /* build.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = build.sh; path = ../build.sh; sourceTree = SOURCE_ROOT; };
+		E96A0FC613754F0D001149EB /* clean.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = clean.sh; path = ../clean.sh; sourceTree = SOURCE_ROOT; };
+		E96A0FC713754F0D001149EB /* complete.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = complete.sh; path = ../complete.sh; sourceTree = SOURCE_ROOT; };
+		E96A0FCB13755329001149EB /* createImage.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = createImage.sh; sourceTree = "<group>"; };
+		E96A0FCC13755329001149EB /* grub.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = grub.cfg; sourceTree = "<group>"; };
 		E979BF2B1347E49D002F4390 /* doxygen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = doxygen.h; sourceTree = "<group>"; };
 		E988E0E3133CAD4B009A4C8E /* boot.S */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = boot.S; sourceTree = "<group>"; };
 		E988E0E4133CAD4B009A4C8E /* entry.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = entry.c; sourceTree = "<group>"; };
@@ -109,7 +138,6 @@
 		E988E0F5133CAD4B009A4C8E /* scheduler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scheduler.h; sourceTree = "<group>"; };
 		E988E0F7133CAD4B009A4C8E /* thread.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = thread.c; sourceTree = "<group>"; };
 		E988E0F8133CAD4B009A4C8E /* thread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = thread.h; sourceTree = "<group>"; };
-		E988E0FA133CAD4B009A4C8E /* shell.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = shell.c; sourceTree = "<group>"; };
 		E988E0FD133CAD4B009A4C8E /* assert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = assert.h; sourceTree = "<group>"; };
 		E988E0FE133CAD4B009A4C8E /* cmos.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cmos.c; sourceTree = "<group>"; };
 		E988E0FF133CAD4B009A4C8E /* cmos.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cmos.h; sourceTree = "<group>"; };
@@ -165,12 +193,24 @@
 		08FB7794FE84155DC02AAC07 /* Kernel */ = {
 			isa = PBXGroup;
 			children = (
+				E96A0FC913755329001149EB /* Build */,
 				E914F181133BD5A60014A480 /* Kernel */,
 				E914F230133BD5C80014A480 /* Libraries */,
 				E914F239133BD5C80014A480 /* Programs */,
+				E96A0FC813754F19001149EB /* Scripts */,
 				E9E5917F12229A0800FB9D0F /* Products */,
 			);
 			name = Kernel;
+			sourceTree = "<group>";
+		};
+		E911B4991375B9A4005316A9 /* Shell */ = {
+			isa = PBXGroup;
+			children = (
+				E911B49A1375B9A4005316A9 /* main.c */,
+				E911B49B1375B9A4005316A9 /* Makefile */,
+				E911B49C1375B9A4005316A9 /* Makefile_ld */,
+			);
+			path = Shell;
 			sourceTree = "<group>";
 		};
 		E914F181133BD5A60014A480 /* Kernel */ = {
@@ -181,7 +221,6 @@
 				E988E0E7133CAD4B009A4C8E /* loader */,
 				E988E0EE133CAD4B009A4C8E /* memory */,
 				E988E0EF133CAD4B009A4C8E /* scheduler */,
-				E988E0F9133CAD4B009A4C8E /* shell */,
 				E988E0FC133CAD4B009A4C8E /* system */,
 				E988E133133CAD4C009A4C8E /* video */,
 				E988E0EC133CAD4B009A4C8E /* Makefile */,
@@ -195,7 +234,6 @@
 			isa = PBXGroup;
 			children = (
 				E914F231133BD5C80014A480 /* libkernel */,
-				E914F238133BD5C80014A480 /* Makefile */,
 			);
 			name = Libraries;
 			path = ../Libraries;
@@ -204,8 +242,17 @@
 		E914F231133BD5C80014A480 /* libkernel */ = {
 			isa = PBXGroup;
 			children = (
+				E96A0FC313754590001149EB /* Makefile */,
 				E914F232133BD5C80014A480 /* libkernel.h */,
 				E914F233133BD5C80014A480 /* stdint.h */,
+				E9339F9E13729BDB00B0050B /* stdlib.c */,
+				E9339F9D13729BDB00B0050B /* stdlib.h */,
+				E911B4D91375CC6C005316A9 /* stdio.c */,
+				E911B4DA1375CC6C005316A9 /* stdio.h */,
+				E911B4C41375C9C8005316A9 /* process.c */,
+				E911B4C31375C9C8005316A9 /* process.h */,
+				E911B4F31375CF1C005316A9 /* string.c */,
+				E911B4F41375CF1C005316A9 /* string.h */,
 				E914F234133BD5C80014A480 /* syscall.c */,
 				E914F235133BD5C80014A480 /* syscall.h */,
 			);
@@ -215,9 +262,8 @@
 		E914F239133BD5C80014A480 /* Programs */ = {
 			isa = PBXGroup;
 			children = (
+				E911B4991375B9A4005316A9 /* Shell */,
 				E914F23C133BD5C80014A480 /* Test */,
-				E914F23A133BD5C80014A480 /* Makefile */,
-				E914F23B133BD5C80014A480 /* Makefile_ld */,
 			);
 			name = Programs;
 			path = ../Programs;
@@ -226,10 +272,32 @@
 		E914F23C133BD5C80014A480 /* Test */ = {
 			isa = PBXGroup;
 			children = (
+				E96A0FC013754578001149EB /* Makefile */,
+				E96A0FC113754578001149EB /* Makefile_ld */,
 				E914F242133BD5C80014A480 /* Test.c */,
 			);
 			path = Test;
 			sourceTree = "<group>";
+		};
+		E96A0FC813754F19001149EB /* Scripts */ = {
+			isa = PBXGroup;
+			children = (
+				E96A0FC513754F0D001149EB /* build.sh */,
+				E96A0FC613754F0D001149EB /* clean.sh */,
+				E96A0FC713754F0D001149EB /* complete.sh */,
+			);
+			name = Scripts;
+			sourceTree = "<group>";
+		};
+		E96A0FC913755329001149EB /* Build */ = {
+			isa = PBXGroup;
+			children = (
+				E96A0FCB13755329001149EB /* createImage.sh */,
+				E96A0FCC13755329001149EB /* grub.cfg */,
+			);
+			name = Build;
+			path = ../Build;
+			sourceTree = SOURCE_ROOT;
 		};
 		E988E0E1133CAD4B009A4C8E /* boot */ = {
 			isa = PBXGroup;
@@ -245,6 +313,7 @@
 			isa = PBXGroup;
 			children = (
 				E988E0E8133CAD4B009A4C8E /* ELF.h */,
+				E96A0FBE1375372B001149EB /* ELF.c */,
 				E988E0E9133CAD4B009A4C8E /* loader.c */,
 				E988E0EA133CAD4B009A4C8E /* loader.h */,
 			);
@@ -280,14 +349,6 @@
 			path = scheduler;
 			sourceTree = "<group>";
 		};
-		E988E0F9133CAD4B009A4C8E /* shell */ = {
-			isa = PBXGroup;
-			children = (
-				E988E0FA133CAD4B009A4C8E /* shell.c */,
-			);
-			path = shell;
-			sourceTree = "<group>";
-		};
 		E988E0FC133CAD4B009A4C8E /* system */ = {
 			isa = PBXGroup;
 			children = (
@@ -316,6 +377,7 @@
 				E988E121133CAD4B009A4C8E /* port.h */,
 				E988E122133CAD4B009A4C8E /* ps2.c */,
 				E988E123133CAD4B009A4C8E /* ps2.h */,
+				E911B4E21375CDAE005316A9 /* stdarg.h */,
 				E988E125133CAD4C009A4C8E /* stdbool.h */,
 				E988E126133CAD4C009A4C8E /* stdint.h */,
 				E988E127133CAD4C009A4C8E /* stdio.c */,
@@ -388,6 +450,11 @@
 				E94A05D7133D668800A8A08B /* vmemory.h in Headers */,
 				E94A05DB133D6D1D00A8A08B /* memory.h in Headers */,
 				E979BF2C1347E49D002F4390 /* doxygen.h in Headers */,
+				E9339F9F13729BDB00B0050B /* stdlib.h in Headers */,
+				E911B4C51375C9C8005316A9 /* process.h in Headers */,
+				E911B4DC1375CC6C005316A9 /* stdio.h in Headers */,
+				E911B4E31375CDAE005316A9 /* stdarg.h in Headers */,
+				E911B4F61375CF1C005316A9 /* string.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -442,8 +509,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				E914F247133BD5C80014A480 /* syscall.c in Sources */,
-				E914F24B133BD5C80014A480 /* Makefile in Sources */,
-				E914F24C133BD5C80014A480 /* Makefile in Sources */,
 				E914F252133BD5C80014A480 /* Test.c in Sources */,
 				E988E138133CAD4C009A4C8E /* boot.S in Sources */,
 				E988E139133CAD4C009A4C8E /* entry.c in Sources */,
@@ -453,7 +518,6 @@
 				E988E143133CAD4C009A4C8E /* process.c in Sources */,
 				E988E145133CAD4C009A4C8E /* scheduler.c in Sources */,
 				E988E148133CAD4C009A4C8E /* thread.c in Sources */,
-				E988E14A133CAD4C009A4C8E /* shell.c in Sources */,
 				E988E14D133CAD4C009A4C8E /* cmos.c in Sources */,
 				E988E150133CAD4C009A4C8E /* console.c in Sources */,
 				E988E153133CAD4C009A4C8E /* debug.c in Sources */,
@@ -475,6 +539,15 @@
 				E94A05D4133D5FC400A8A08B /* pmemory.c in Sources */,
 				E94A05D8133D668800A8A08B /* vmemory.c in Sources */,
 				E94A05DC133D6D1D00A8A08B /* memory.c in Sources */,
+				E9339FA013729BDB00B0050B /* stdlib.c in Sources */,
+				E96A0FBF1375372B001149EB /* ELF.c in Sources */,
+				E96A0FC213754578001149EB /* Makefile in Sources */,
+				E96A0FC413754590001149EB /* Makefile in Sources */,
+				E911B49D1375B9A4005316A9 /* main.c in Sources */,
+				E911B49E1375B9A4005316A9 /* Makefile in Sources */,
+				E911B4C61375C9C8005316A9 /* process.c in Sources */,
+				E911B4DB1375CC6C005316A9 /* stdio.c in Sources */,
+				E911B4F51375CF1C005316A9 /* string.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

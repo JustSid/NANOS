@@ -1,5 +1,5 @@
 //
-//  syscall.c
+//  process.c
 //  libkernel
 //
 //  Created by Sidney Just
@@ -16,17 +16,33 @@
 //  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+#ifndef _PROCESS_H_
+#define _PROCESS_H_
 
-#include "syscall.h"
-sys_syscall syscall = NULL;
+#include "stdint.h"
+#define PID_INVALID UINT32_MAX
 
-void loadSyscall()
-{
-    if(!syscall)
-    {
-        uintptr_t result;
-	   __asm__ volatile("int $0x31" : "=a" (result));
-	
-	   syscall = (sys_syscall)result;
-    }
-}
+
+typedef void (*threadEntry)();
+
+extern uint32_t processCreate(char *name);
+extern uint32_t threadCreate(threadEntry entry);
+extern void sleep();
+extern void cls();
+
+
+extern void setName(char *name);
+extern void setIdentifier(char *identifier);
+
+extern uint32_t getPid();
+extern uint32_t getNextPid(uint32_t pid);
+
+extern char *getName(uint32_t pid);
+extern char *getIdentifier(uint32_t pid);
+extern uint32_t getThreadCount(uint32_t pid);
+extern uint32_t getAllocatedMemory(uint32_t pid);
+
+extern void hookKeyboard(void *characterBuffer, size_t bufferSize);
+extern void unhookKeyboard();
+
+#endif

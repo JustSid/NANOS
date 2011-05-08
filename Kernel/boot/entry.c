@@ -38,7 +38,7 @@
 
 #define VersionMajor 0
 #define VersionMinor 2
-#define VersionPatch 10
+#define VersionPatch 15
 #define VersionCreate(major, minor, patch) (((major) << 16) | ((minor) << 8) | (patch))
 #define VersionCurrent VersionCreate(VersionMajor, VersionMinor, VersionPatch)
 
@@ -68,14 +68,11 @@ void boot(struct multiboot_info *bootinfo)
 	if(st_init() == 0) // System stuff (syscalls)
 		panic("Errow while initializing the system!");
 	
-	
-	#ifndef BareBoneBoot
 	if(sd_init() == 0) // Scheduler and kernel task
 		panic("Error while initializing the scheduler!");
 	
 	ps_init(); // PS/2 controller
 	km_init(); // Keyboard defintions
-	
 	
 	
 	// Load the multiboot modules
@@ -86,27 +83,12 @@ void boot(struct multiboot_info *bootinfo)
     for(i=0; i<bootinfo->mbs_mods_count; i++) 
 		ld_createMultibootModuleImage(&modules[i]);
 
-	#endif
 	cn_puts("\n\n");
 	
 	// And then reality kicks in...
 	ir_enableInterrupts();
 	
-	#ifndef BareBoneBoot
-	kernelTask(); // Spin up the real kernel task, see scheduler.c for more informations
-	#else
-	for(int i=0; i<5; i++)
-	{
-		uintptr_t freePage = vmm_getFreePage(vmm_getKernelContext());
-		
-		void *ptr = mm_alloc(10);
-		strcpy((char *)ptr, "foobar");
-		
-		cn_printf("Free page: %p. Allocated: %p\n", freePage, ptr);
-		mm_free(ptr);
-	}
 	
-	cn_printf("Bare bone boot completed...");
+	kernelTask(); // Spin up the real kernel task, see scheduler.c for more informations
 	while(1) {__asm__("hlt;");}
-	#endif
 }

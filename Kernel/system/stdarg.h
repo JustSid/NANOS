@@ -1,5 +1,5 @@
 //
-//  vmemory.h
+//  stdarg.h
 //  NANOS
 //
 //  Created by Sidney Just
@@ -16,44 +16,14 @@
 //  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#ifndef _VMEMORY_H_
-#define _VMEMORY_H_
+#ifndef _STDARG_H_
+#define _STDARG_H_
 
-#include <system/stdint.h>
-#include <system/stdbool.h>
+typedef __builtin_va_list	va_list;
 
-#include <scheduler/mutex.h>
-
-#define VMM_PAGETABLEFLAG_PRESENT    1
-#define VMM_PAGETABLEFLAG_WRITEABLE  2
-#define VMM_PAGETABLEFLAG_USERSPACE  4
-
-typedef struct
-{
-	sd_mutex mutex;
-	uint32_t *pageDirectory;
-} vmm_context;
-
-
-extern int vmm_init();
-
-
-extern vmm_context *vmm_getKernelContext();
-extern vmm_context *vmm_getCurrentContext();
-
-extern vmm_context *vmm_createContext();
-extern void vmm_destroyContext(vmm_context *context);
-
-extern uintptr_t vmm_getFreePage(vmm_context *context);
-extern uintptr_t vmm_getFreePages(vmm_context *context, uint32_t pageCount);
-
-extern bool vmm_mapPage(vmm_context *context, uintptr_t virtAddress, uintptr_t physAddress, bool userspace);
-extern bool vmm_mapPageRange(vmm_context *context, uintptr_t virtAddress, uintptr_t physAddress, size_t range, bool userspace);
-
-extern bool vmm_unmapPage(vmm_context *context, uintptr_t virtAddress);
-
-extern uintptr_t vmm_getPhysicalAddress(vmm_context *context, uintptr_t virtAddress);
-
-extern void vmm_activateContext(vmm_context *context);
+#define va_start(v, l)		__builtin_va_start(v,l)
+#define va_end(v)			__builtin_va_end(v)
+#define va_arg(v, l)		__builtin_va_arg(v,l)
+#define va_copy(d, s)		__builtin_va_copy(d,s)
 
 #endif

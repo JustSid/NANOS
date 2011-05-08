@@ -24,15 +24,50 @@
 #include <system/stdint.h>
 #include <system/stdbool.h>
 
-#include <memory/pmemory.h>
-#include <memory/vmemory.h>
+#include "pmemory.h"
+#include "vmemory.h"
+
+struct mm_heap;
+
+#define MM_ALLOCATION_FLAG_FREE 1
+#define MM_ALLOCATION_FLAG_USED 2
+
+typedef struct mm_allocation
+{
+	void *begin;
+	size_t size;
+	uint8_t flags;
+	
+	struct mm_allocation *next;
+} mm_allocation;
+
+typedef struct
+{
+	size_t size;
+	size_t allocatedBytes;
+	size_t allocations;
+	
+	vmm_context *contexts[2]; // Two initial contexts, kernel and process
+	uint8_t contextCount;
+	
+	mm_allocation *firstAllocation;
+} mm_heap;
 
 
 extern int mm_init(struct multiboot_info *bootinfo);
 
-extern void *mm_allocContext(size_t size, vmm_context *context);
-extern void *mm_alloc(size_t size);
 
+extern mm_heap *mm_createHeap(size_t size, vmm_context *context);
+extern mm_heap *mm_kernelHeap();
+extern void mm_destroyHeap(mm_heap *heap);
+
+extern void *mm_heapAlloc(mm_heap *heap, size_t size);
+extern void *mm_heapRealloc(mm_heap *heap, void *ptr, size_t newSize);
+extern void mm_heapFree(mm_heap *heap, void *ptr);
+
+
+extern void *mm_alloc(size_t size);
+extern void *mm_realloc(void *ptr, size_t size);
 extern void mm_free(void *ptr);
 
 #endif

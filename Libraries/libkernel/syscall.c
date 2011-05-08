@@ -18,15 +18,52 @@
 
 
 #include "syscall.h"
-sys_syscall syscall = NULL;
 
-void loadSyscall()
+uint32_t syscall0(uint32_t type)
 {
-    if(!syscall)
-    {
-        uintptr_t result;
-	   __asm__ volatile("int $0x31" : "=a" (result));
+	uint32_t retVal;
 	
-	   syscall = (sys_syscall)result;
-    }
+	__asm__ volatile("mov %1, %%eax;"
+					 "int $0x30;" : "=a" (retVal) : "r" (type));
+	
+	return retVal;
+}
+
+uint32_t syscall1(uint32_t type, uint32_t arg1)
+{
+	uint32_t retVal = 0;
+	
+	__asm__ volatile("pushl %2;"
+					 "movl %1, %%eax;"
+					 "int $0x30;"
+					 "add $0x4, %%esp;" : "=a" (retVal) : "r" (type), "r" (arg1));
+	
+	return retVal;
+}
+
+uint32_t syscall2(uint32_t type, uint32_t arg1, uint32_t arg2)
+{
+	uint32_t retVal = 0;
+	
+	__asm__ volatile("pushl %3;"
+					 "pushl %2;"
+					 "movl %1, %%eax;"
+					 "int $0x30;"
+					 "add $0x8, %%esp;" : "=a" (retVal) : "r" (type), "r" (arg1), "r" (arg2));
+	
+	return retVal;
+}
+
+uint32_t syscall3(uint32_t type, uint32_t arg1, uint32_t arg2, uint32_t arg3)
+{
+	uint32_t retVal = 0;
+	
+	__asm__ volatile("pushl %4;"
+					 "pushl %3;"
+					 "pushl %2;"
+					 "movl %1, %%eax;"
+					 "int $0x30;"
+					 "add $0xC, %%esp;" : "=a" (retVal) : "r" (type), "r" (arg1), "r" (arg2), "r" (arg3));
+	
+	return retVal;
 }

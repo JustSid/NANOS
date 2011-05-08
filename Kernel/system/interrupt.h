@@ -19,35 +19,36 @@
 #ifndef _INTERRUPT_H_
 #define _INTERRUPT_H_
 
+#include <memory/vmemory.h>
 #include "stdint.h"
 
 typedef struct 
-{
-    uint32_t   eax;
-    uint32_t   ebx;
-    uint32_t   ecx;
-    uint32_t   edx;
-    uint32_t   esi;
-    uint32_t   edi;
-    uint32_t   ebp;
+{	
+	uint32_t edi;
+    uint32_t esi;
+    uint32_t ebp;
+    uint32_t esp_;
+    uint32_t ebx;
+    uint32_t edx;
+    uint32_t ecx;
+    uint32_t eax;
 	
-    uint32_t   intr; // Interrupt number
-    uint32_t   error; // Error number
+    uint32_t intr;
+    uint32_t error;
 	
-    uint32_t   eip;
-    uint32_t   cs;
-    uint32_t   eflags;
-    uint32_t   esp;
-    uint32_t   ss;
+    uint32_t eip;
+    uint32_t cs;
+    uint32_t eflags;
+    uint32_t esp;
+    uint32_t ss;
 } ir_cpuState;
 
 /**
  * Interrupt handler
- @param interrupt The interrupt number
  @param state The CPU state
  @return A new CPU state, the old CPU state or NULL
  **/
-typedef ir_cpuState *(*ir_interruptHandle)(uint32_t interrupt, ir_cpuState *state);
+typedef ir_cpuState *(*ir_interruptHandle)(ir_cpuState *state);
 
 /**
  * Enables interrupts
@@ -66,7 +67,7 @@ extern void ir_disableInterrupts();
  @param handleEnd The end of the interrupt range, can be the same as handleBegin
  **/
 extern int ir_installInterruptHandler(ir_interruptHandle interruptHandle, uint32_t handleBegin, uint32_t handleEnd);
-	
+
 extern ir_cpuState *ir_handleInterrupt(ir_cpuState *state);
 extern int ir_init();
 

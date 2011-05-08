@@ -16,87 +16,26 @@
 //  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#include <system/assert.h>
-#include <system/debug.h>
 #include <system/console.h>
-
-#include <memory/memory.h>
+#include <loader/loader.h>
 #include <scheduler/scheduler.h>
 
 
 extern void shell_main();
 
-
-
-/*void kt_testMemoryAddress()
-{
-	// This test checks if the allocater returns the very same address for the same allocation
-	cn_printf("   Running memory address test...");
-	
-	void *areaA, *areaB;
-	
-	areaA = mm_alloc(10);
-	mm_free(areaA);
-	
-	areaB = mm_alloc(10);
-	mm_free(areaB);
-	
-	
-	assert(areaA == areaB);
-	cn_printf("passed.\n");
-}
-
-void kt_testMemoryMerging()
-{
-	// This test checks if the memory merging works as intended
-	cn_printf("   Running memory merging test...");
-	
-	#define kt_testMemoryMergingRounds 10
-	
-	void *areaEven[kt_testMemoryMergingRounds];
-	void *areaOdd[kt_testMemoryMergingRounds];
-	
-	int i;
-	for(i=0; i<kt_testMemoryMergingRounds; i++)
-	{
-		areaEven[i] = mm_alloc(10);
-		areaOdd[i]  = mm_alloc(10);
-	}
-	
-	// Free the even areas
-	for(i=0; i<kt_testMemoryMergingRounds; i++)
-		mm_free(areaEven[i]);
-	
-	// Free the odd areas
-	for(i=0; i<kt_testMemoryMergingRounds; i++)
-		mm_free(areaOdd[i]);
-	
-	mm_defrag();
-	
-	void *areaTest = mm_alloc((10 * kt_testMemoryMergingRounds) * 2);
-	
-	assert(areaTest == areaEven[0]);
-	cn_printf("passed.\n");
-}*/
-
-
-
 void kernelTask()
 {
-	//sd_setName("Idle");
-	//sd_setIdentifier("krn.nanos.kernel_task");
+	sd_setName("Idle");
+	sd_setIdentifier("krn.nanos.kernel_task");
+
 	
-	/*if(0)
+	uint32_t pid = ld_launchImage("shell.bin");	
+	if(pid == SD_PID_INVALID)
 	{
-		cn_printf("Running memory manager tests...\n");
-		
-		kt_testMemoryAddress();
-		kt_testMemoryMerging();
-		
-		cn_printf("All tests passed\n");		
-	}*/
+		cn_printf("Could not launch shell.bin\n");
+		cn_printf("Please make sure that it is available as multiboot module!\n");
+	}
 	
 	
-	//sd_spawnProcess(shell_main); // Kick off the shell
 	while(1) {__asm__ volatile ("hlt");}
 }
